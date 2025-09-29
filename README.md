@@ -136,8 +136,8 @@ npx shadcn@latest add card dialog input --registry custom
 **📋 Option 3: Manual Component Copy**
 ```bash
 # Copy individual components directly:
-curl -o src/components/ui/button.tsx https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/registry/ui/button.tsx
-curl -o src/lib/utils.ts https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/registry/utils.ts
+curl -o src/components/ui/button.tsx https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry/ui/button.tsx
+curl -o src/lib/utils.ts https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry/utils.ts
 ```
 
 ## 🚀 Quick Start
@@ -147,7 +147,7 @@ curl -o src/lib/utils.ts https://raw.githubusercontent.com/deriv-com/shadcn-ui-t
    {
      "registries": {
        "default": "https://ui.shadcn.com/registry",
-       "custom": "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/registry"
+       "custom": "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry"
      }
    }
    ```
