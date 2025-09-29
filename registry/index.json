@@ -1,0 +1,281 @@
+{
+  "name": "shadcn-ui-templates",
+  "description": "Complete shadcn/ui component templates for V0 development with Figma design token integration",
+  "version": "1.0.0",
+  "components": [
+    {
+      "name": "accordion",
+      "type": "components:ui",
+      "files": ["ui/accordion.tsx"],
+      "dependencies": ["@radix-ui/react-accordion", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "alert",
+      "type": "components:ui",
+      "files": ["ui/alert.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "components:ui",
+      "files": ["ui/alert-dialog.tsx"],
+      "dependencies": ["@radix-ui/react-alert-dialog", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "components:ui",
+      "files": ["ui/aspect-ratio.tsx"],
+      "dependencies": ["@radix-ui/react-aspect-ratio"]
+    },
+    {
+      "name": "avatar",
+      "type": "components:ui",
+      "files": ["ui/avatar.tsx"],
+      "dependencies": ["@radix-ui/react-avatar", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "badge",
+      "type": "components:ui",
+      "files": ["ui/badge.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "components:ui",
+      "files": ["ui/breadcrumb.tsx"],
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "button",
+      "type": "components:ui",
+      "files": ["ui/button.tsx"],
+      "dependencies": ["@radix-ui/react-slot", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "calendar",
+      "type": "components:ui",
+      "files": ["ui/calendar.tsx"],
+      "dependencies": ["react-day-picker", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "card",
+      "type": "components:ui",
+      "files": ["ui/card.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "checkbox",
+      "type": "components:ui",
+      "files": ["ui/checkbox.tsx"],
+      "dependencies": ["@radix-ui/react-checkbox", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "collapsible",
+      "type": "components:ui",
+      "files": ["ui/collapsible.tsx"],
+      "dependencies": ["@radix-ui/react-collapsible"]
+    },
+    {
+      "name": "command",
+      "type": "components:ui",
+      "files": ["ui/command.tsx"],
+      "dependencies": ["cmdk", "@radix-ui/react-dialog", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "context-menu",
+      "type": "components:ui",
+      "files": ["ui/context-menu.tsx"],
+      "dependencies": ["@radix-ui/react-context-menu", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "dialog",
+      "type": "components:ui",
+      "files": ["ui/dialog.tsx"],
+      "dependencies": ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "drawer",
+      "type": "components:ui",
+      "files": ["ui/drawer.tsx"],
+      "dependencies": ["vaul", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "components:ui",
+      "files": ["ui/dropdown-menu.tsx"],
+      "dependencies": ["@radix-ui/react-dropdown-menu", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "form",
+      "type": "components:ui",
+      "files": ["ui/form.tsx"],
+      "dependencies": ["@radix-ui/react-label", "@radix-ui/react-slot", "react-hook-form", "@hookform/resolvers", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "hover-card",
+      "type": "components:ui",
+      "files": ["ui/hover-card.tsx"],
+      "dependencies": ["@radix-ui/react-hover-card", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "input",
+      "type": "components:ui",
+      "files": ["ui/input.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "label",
+      "type": "components:ui",
+      "files": ["ui/label.tsx"],
+      "dependencies": ["@radix-ui/react-label", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "menubar",
+      "type": "components:ui",
+      "files": ["ui/menubar.tsx"],
+      "dependencies": ["@radix-ui/react-menubar", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "components:ui",
+      "files": ["ui/navigation-menu.tsx"],
+      "dependencies": ["@radix-ui/react-navigation-menu", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "popover",
+      "type": "components:ui",
+      "files": ["ui/popover.tsx"],
+      "dependencies": ["@radix-ui/react-popover", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "progress",
+      "type": "components:ui",
+      "files": ["ui/progress.tsx"],
+      "dependencies": ["@radix-ui/react-progress", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "radio-group",
+      "type": "components:ui",
+      "files": ["ui/radio-group.tsx"],
+      "dependencies": ["@radix-ui/react-radio-group", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "resizable",
+      "type": "components:ui",
+      "files": ["ui/resizable.tsx"],
+      "dependencies": ["react-resizable-panels", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "scroll-area",
+      "type": "components:ui",
+      "files": ["ui/scroll-area.tsx"],
+      "dependencies": ["@radix-ui/react-scroll-area", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "select",
+      "type": "components:ui",
+      "files": ["ui/select.tsx"],
+      "dependencies": ["@radix-ui/react-select", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "separator",
+      "type": "components:ui",
+      "files": ["ui/separator.tsx"],
+      "dependencies": ["@radix-ui/react-separator", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "sheet",
+      "type": "components:ui",
+      "files": ["ui/sheet.tsx"],
+      "dependencies": ["@radix-ui/react-dialog", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "skeleton",
+      "type": "components:ui",
+      "files": ["ui/skeleton.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "slider",
+      "type": "components:ui",
+      "files": ["ui/slider.tsx"],
+      "dependencies": ["@radix-ui/react-slider", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "sonner",
+      "type": "components:ui",
+      "files": ["ui/sonner.tsx"],
+      "dependencies": ["sonner", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "switch",
+      "type": "components:ui",
+      "files": ["ui/switch.tsx"],
+      "dependencies": ["@radix-ui/react-switch", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "table",
+      "type": "components:ui",
+      "files": ["ui/table.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "tabs",
+      "type": "components:ui",
+      "files": ["ui/tabs.tsx"],
+      "dependencies": ["@radix-ui/react-tabs", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "textarea",
+      "type": "components:ui",
+      "files": ["ui/textarea.tsx"],
+      "dependencies": ["class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "toast",
+      "type": "components:ui",
+      "files": ["ui/toast.tsx", "hooks/use-toast.ts"],
+      "dependencies": ["@radix-ui/react-toast", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "toaster",
+      "type": "components:ui",
+      "files": ["ui/toaster.tsx", "hooks/use-toast.ts"],
+      "dependencies": ["@radix-ui/react-toast", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "toggle",
+      "type": "components:ui",
+      "files": ["ui/toggle.tsx"],
+      "dependencies": ["@radix-ui/react-toggle", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "toggle-group",
+      "type": "components:ui",
+      "files": ["ui/toggle-group.tsx"],
+      "dependencies": ["@radix-ui/react-toggle-group", "class-variance-authority", "clsx", "tailwind-merge"]
+    },
+    {
+      "name": "tooltip",
+      "type": "components:ui",
+      "files": ["ui/tooltip.tsx"],
+      "dependencies": ["@radix-ui/react-tooltip", "class-variance-authority", "clsx", "tailwind-merge"]
+    }
+  ],
+  "utils": [
+    {
+      "name": "cn",
+      "type": "lib:utils",
+      "files": ["utils.ts"],
+      "dependencies": ["clsx", "tailwind-merge"]
+    }
+  ],
+  "hooks": [
+    {
+      "name": "use-toast",
+      "type": "hooks",
+      "files": ["hooks/use-toast.ts"],
+      "dependencies": []
+    }
+  ]
+} 

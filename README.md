@@ -133,21 +133,35 @@ npx shadcn@latest add card dialog input --registry custom
 - Creates new repository with all 40+ components included
 - Perfect for starting fresh V0 projects
 
-**📋 Option 3: Component Installation Script**
+**📋 Option 3: Manual Component Copy**
 ```bash
-# Download and run the installer
-curl -o install-components.sh https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/install-components.sh
-chmod +x install-components.sh
-./install-components.sh
+# Copy individual components directly:
+curl -o src/components/ui/button.tsx https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/registry/ui/button.tsx
+curl -o src/lib/utils.ts https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/registry/utils.ts
 ```
 
-**📋 Option 4: Manual Component Copy**
-- Copy individual components from `src/components/ui/`
-- Use curl or direct download for specific components
+## 🚀 Quick Start
 
-👉 **See [REGISTRY-SETUP.md](REGISTRY-SETUP.md) for detailed registry setup guide**  
-📋 **All V0 methods:** [V0-INTEGRATION-GUIDE.md](V0-INTEGRATION-GUIDE.md)  
-🔐 **Private repo?** [PRIVATE-REPO-SOLUTIONS.md](PRIVATE-REPO-SOLUTIONS.md)
+1. **Add registry to your `components.json`:**
+   ```json
+   {
+     "registries": {
+       "default": "https://ui.shadcn.com/registry",
+       "custom": "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/main/registry"
+     }
+   }
+   ```
+
+2. **Install components:**
+   ```bash
+   npx shadcn@latest add button card dialog --registry custom
+   ```
+
+3. **Use in your project:**
+   ```tsx
+   import { Button } from "@/components/ui/button"
+   import { Card, CardContent } from "@/components/ui/card"
+   ```
 
 ### Development
 
