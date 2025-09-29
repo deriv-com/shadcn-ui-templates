@@ -54,7 +54,7 @@
     "@storybook/addon-links": "^7.4.0",
     "@storybook/blocks": "^7.4.0",
     "@storybook/react": "^7.4.0",
-    "@storybook/react-vite": "^7.4.0",
+    "@storybook/react-vite": "^9.1.8",
     "@storybook/testing-library": "^0.2.0",
     "@types/node": "^20.5.2",
     "@types/react": "^18.2.15",
@@ -71,7 +71,7 @@
     "storybook": "^7.4.0",
     "tailwindcss": "^3.3.0",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^7.1.7"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
