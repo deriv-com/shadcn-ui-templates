@@ -20,6 +20,6 @@
   },
   "registries": {
     "default": "https://ui.shadcn.com/registry",
-    "custom": "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry"
+    "custom": "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry/index.json"
   }
 }
