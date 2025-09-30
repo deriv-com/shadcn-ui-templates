@@ -31,6 +31,7 @@ class RegistrySyncer {
     this.registryDir = options.registryDir || 'registry';
     this.libDir = options.libDir || 'src/lib';
     this.hooksDir = options.hooksDir || 'src/hooks';
+    this.stylesDir = options.stylesDir || 'src/styles';
     this.verbose = options.verbose || false;
   }
 
@@ -132,15 +133,63 @@ class RegistrySyncer {
     return hooks;
   }
 
+  // Get styling files
+  getStylingFiles() {
+    const styles = [];
+    const stylesPath = path.resolve(this.stylesDir);
+    
+    if (fs.existsSync(stylesPath)) {
+      const files = fs.readdirSync(stylesPath);
+      
+      files.forEach(file => {
+        if (file.endsWith('.css')) {
+          styles.push({
+            name: file.replace('.css', ''),
+            file: file,
+            path: `styles/${file}`,
+            content: fs.readFileSync(path.join(stylesPath, file), 'utf8')
+          });
+        }
+      });
+    }
+
+    return styles;
+  }
+
+  // Get config files
+  getConfigFiles() {
+    const configs = [];
+    const configFiles = [
+      'tailwind.config.js',
+      'postcss.config.js',
+      'components.json'
+    ];
+
+    configFiles.forEach(file => {
+      const filePath = path.resolve(file);
+      if (fs.existsSync(filePath)) {
+        configs.push({
+          name: file.replace(/\.(js|json)$/, ''),
+          file: file,
+          path: file,
+          content: fs.readFileSync(filePath, 'utf8')
+        });
+      }
+    });
+
+    return configs;
+  }
+
   // Create registry directory structure
   createRegistryStructure() {
     const registryPath = path.resolve(this.registryDir);
     const uiPath = path.join(registryPath, 'ui');
     const libPath = path.join(registryPath, 'lib');
     const hooksPath = path.join(registryPath, 'hooks');
+    const stylesPath = path.join(registryPath, 'styles');
 
     // Create directories
-    [registryPath, uiPath, libPath, hooksPath].forEach(dir => {
+    [registryPath, uiPath, libPath, hooksPath, stylesPath].forEach(dir => {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
         log.success(`Created directory: ${dir}`);
@@ -205,8 +254,44 @@ class RegistrySyncer {
     return hooks;
   }
 
+  // Copy styling files to registry
+  copyStyles() {
+    log.subtitle('🎨 Copying Styling Files to Registry');
+    
+    const styles = this.getStylingFiles();
+    const sourcePath = path.resolve(this.stylesDir);
+    const targetPath = path.join(this.registryDir, 'styles');
+
+    styles.forEach(style => {
+      const sourceFile = path.join(sourcePath, style.file);
+      const targetFile = path.join(targetPath, style.file);
+      
+      fs.copyFileSync(sourceFile, targetFile);
+      log.success(`Copied ${style.name} → registry/styles/${style.file}`);
+    });
+
+    return styles;
+  }
+
+  // Copy config files to registry
+  copyConfigs() {
+    log.subtitle('⚙️ Copying Config Files to Registry');
+    
+    const configs = this.getConfigFiles();
+
+    configs.forEach(config => {
+      const sourceFile = path.resolve(config.file);
+      const targetFile = path.join(this.registryDir, config.file);
+      
+      fs.copyFileSync(sourceFile, targetFile);
+      log.success(`Copied ${config.name} → registry/${config.file}`);
+    });
+
+    return configs;
+  }
+
   // Generate registry index.json
-  generateRegistryIndex(components, utils, hooks) {
+  generateRegistryIndex(components, utils, hooks, styles, configs) {
     log.subtitle('📋 Generating Registry Index');
     
     const registry = {
@@ -216,7 +301,9 @@ class RegistrySyncer {
       registry: "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry/index.json",
       components: {},
       utilities: {},
-      hooks: {}
+      hooks: {},
+      styles: {},
+      configs: {}
     };
 
     // Add components
@@ -231,13 +318,7 @@ class RegistrySyncer {
           }
         ],
         dependencies: component.dependencies,
-        registryDependencies: [],
-        files: [
-          {
-            name: component.file,
-            content: component.content
-          }
-        ]
+        registryDependencies: []
       };
     });
 
@@ -269,6 +350,34 @@ class RegistrySyncer {
       };
     });
 
+    // Add styles
+    styles.forEach(style => {
+      registry.styles[style.name] = {
+        name: style.name,
+        type: "styles",
+        files: [
+          {
+            name: style.file,
+            content: style.content
+          }
+        ]
+      };
+    });
+
+    // Add configs
+    configs.forEach(config => {
+      registry.configs[config.name] = {
+        name: config.name,
+        type: "config",
+        files: [
+          {
+            name: config.file,
+            content: config.content
+          }
+        ]
+      };
+    });
+
     // Write registry index
     const indexPath = path.join(this.registryDir, 'index.json');
     fs.writeFileSync(indexPath, JSON.stringify(registry, null, 2));
@@ -288,21 +397,27 @@ class RegistrySyncer {
     const components = this.copyComponents();
     const utils = this.copyUtilities();
     const hooks = this.copyHooks();
+    const styles = this.copyStyles();
+    const configs = this.copyConfigs();
     
     // Generate registry index
-    const registry = this.generateRegistryIndex(components, utils, hooks);
+    const registry = this.generateRegistryIndex(components, utils, hooks, styles, configs);
     
     log.success('✅ Registry sync completed successfully!');
     log.info(`📊 Summary:`);
     log.info(`   Components: ${components.length}`);
     log.info(`   Utilities: ${utils.length}`);
     log.info(`   Hooks: ${hooks.length}`);
+    log.info(`   Styles: ${styles.length}`);
+    log.info(`   Configs: ${configs.length}`);
     log.info(`   Registry: ${this.registryDir}/index.json`);
     
     return {
       components: components.length,
       utils: utils.length,
       hooks: hooks.length,
+      styles: styles.length,
+      configs: configs.length,
       registry: registry
     };
   }
@@ -314,6 +429,8 @@ class RegistrySyncer {
     const components = this.getComponentFiles();
     const utils = this.getUtilityFiles();
     const hooks = this.getHookFiles();
+    const styles = this.getStylingFiles();
+    const configs = this.getConfigFiles();
     
     console.log(`ℹ Components: ${components.length}`);
     components.forEach(comp => {
@@ -328,6 +445,16 @@ class RegistrySyncer {
     console.log(`\nℹ Hooks: ${hooks.length}`);
     hooks.forEach(hook => {
       console.log(`   - ${hook.name} (${hook.file})`);
+    });
+
+    console.log(`\nℹ Styles: ${styles.length}`);
+    styles.forEach(style => {
+      console.log(`   - ${style.name} (${style.file})`);
+    });
+
+    console.log(`\nℹ Configs: ${configs.length}`);
+    configs.forEach(config => {
+      console.log(`   - ${config.name} (${config.file})`);
     });
   }
 }
@@ -347,12 +474,13 @@ program
   .option('-r, --registry-dir <dir>', 'Registry directory', 'registry')
   .option('-l, --lib-dir <dir>', 'Lib directory', 'src/lib')
   .option('-h, --hooks-dir <dir>', 'Hooks directory', 'src/hooks')
+  .option('-st, --styles-dir <dir>', 'Styles directory', 'src/styles')
   .option('-v, --verbose', 'Verbose output')
   .action(async (options) => {
     const syncer = new RegistrySyncer(options);
     await syncer.sync();
     log.success('\n🎉 Registry sync completed successfully!');
-    log.info('Your registry is now up to date with all components.');
+    log.info('Your registry is now up to date with all components, styles, and configs.');
   });
 
 program
@@ -362,6 +490,7 @@ program
   .option('-r, --registry-dir <dir>', 'Registry directory', 'registry')
   .option('-l, --lib-dir <dir>', 'Lib directory', 'src/lib')
   .option('-h, --hooks-dir <dir>', 'Hooks directory', 'src/hooks')
+  .option('-st, --styles-dir <dir>', 'Styles directory', 'src/styles')
   .action(async (options) => {
     const syncer = new RegistrySyncer(options);
     await syncer.report();
