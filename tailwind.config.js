@@ -51,6 +51,14 @@ module.exports = {
            DEFAULT: "rgb(var(--card) / <alpha-value>)",
            foreground: "rgb(var(--card-foreground) / <alpha-value>)",
          },
+         buy: {
+           "20": "rgb(var(--buy-20) / <alpha-value>)",
+           "40": "rgb(var(--buy-40) / <alpha-value>)",
+         },
+         sell: {
+           "20": "rgb(var(--sell-20) / <alpha-value>)",
+           "40": "rgb(var(--sell-40) / <alpha-value>)",
+         },
                     // Enhanced color palette from design tokens
             base: {
           "black": "rgb(0, 0, 0)",

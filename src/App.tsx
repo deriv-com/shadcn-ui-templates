@@ -89,6 +89,8 @@ function App() {
                   <Button variant="outline">Outline</Button>
                   <Button variant="ghost">Ghost</Button>
                   <Button variant="link">Link</Button>
+                  <Button variant="buy">Buy</Button>
+                  <Button variant="sell">Sell</Button>
                 </div>
               </div>
               
