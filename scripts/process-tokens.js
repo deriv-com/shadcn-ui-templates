@@ -91,13 +91,12 @@ class ComprehensiveTokenProcessor {
     return colorValue;
   }
 
-  // Extract ALL colors from ALL token files
-  extractAllColors() {
-    log.subtitle('🎨 Extracting ALL Colors from ALL Token Files');
+  // Extract colors for specific mode (light or dark)
+  extractColorsForMode(mode) {
+    log.subtitle(`🎨 Extracting ${mode} Colors from Token Files`);
     
-    const allColors = { light: {}, dark: {} };
+    const colors = {};
     
-    // Process theme-tokens.json for semantic colors
     if (this.tokens.theme && this.tokens.theme.variables) {
       this.tokens.theme.variables.forEach(variable => {
         if (variable.type !== 'COLOR') return;
@@ -105,9 +104,11 @@ class ComprehensiveTokenProcessor {
         const name = variable.name;
         const modes = variable.resolvedValuesByMode || {};
         
-        // Extract color value from mode 1:1
+        // Extract color value based on mode
         let colorValue = null;
-        if (modes['1:1'] && modes['1:1'].resolvedValue) {
+        if (mode === 'light' && name.includes('light') && modes['1:1'] && modes['1:1'].resolvedValue) {
+          colorValue = modes['1:1'].resolvedValue;
+        } else if (mode === 'dark' && name.includes('dark') && modes['1:1'] && modes['1:1'].resolvedValue) {
           colorValue = modes['1:1'].resolvedValue;
         }
         
@@ -116,13 +117,12 @@ class ComprehensiveTokenProcessor {
         // Process color name to CSS variable name
         const cssVarName = this.processSemanticColorName(name);
         if (cssVarName) {
-          allColors.light[cssVarName] = this.convertColor(colorValue);
-          allColors.dark[cssVarName] = this.convertColor(colorValue);
+          colors[cssVarName] = this.convertColor(colorValue);
         }
       });
     }
     
-    return allColors;
+    return colors;
   }
 
   // Process semantic color names
@@ -184,22 +184,24 @@ class ComprehensiveTokenProcessor {
     return null;
   }
 
-  // Generate comprehensive CSS from ALL token data
+  // Generate comprehensive CSS with proper light/dark mode colors
   generateComprehensiveCSS() {
-    log.subtitle('🎨 Generating Comprehensive CSS from ALL Token Data');
+    log.subtitle('🎨 Generating Comprehensive CSS with Light/Dark Mode Colors');
     
-    const allColors = this.extractAllColors();
+    const lightColors = this.extractColorsForMode('light');
+    const darkColors = this.extractColorsForMode('dark');
     
     // Generate CSS variables from the actual extracted data
     let lightVars = '';
     let darkVars = '';
     
-    // Add semantic colors
-    Object.entries(allColors.light).forEach(([name, value]) => {
+    // Add light mode colors
+    Object.entries(lightColors).forEach(([name, value]) => {
       lightVars += `    --${name}: ${value};\n`;
     });
     
-    Object.entries(allColors.dark).forEach(([name, value]) => {
+    // Add dark mode colors
+    Object.entries(darkColors).forEach(([name, value]) => {
       darkVars += `    --${name}: ${value};\n`;
     });
     
@@ -211,11 +213,11 @@ class ComprehensiveTokenProcessor {
   :root {
     --radius: 0.5rem;
     
-    /* ALL colors from Figma tokens */
+    /* Light mode colors from Figma tokens */
 ${lightVars}  }
 
   .dark {
-    /* ALL colors from Figma tokens */
+    /* Dark mode colors from Figma tokens */
 ${darkVars}  }
 }
 
@@ -261,7 +263,7 @@ ${darkVars}  }
 
   // Apply ALL token data
   async apply() {
-    log.title('🚀 Applying ALL Token Data');
+    log.title('🚀 Applying ALL Token Data with Light/Dark Mode Support');
     
     // Generate comprehensive CSS
     const comprehensiveCSS = this.generateComprehensiveCSS();
@@ -269,7 +271,7 @@ ${darkVars}  }
     // Update globals.css
     const globalsPath = path.join(this.outputDir, 'src/styles/globals.css');
     fs.writeFileSync(globalsPath, comprehensiveCSS);
-    log.success('Updated src/styles/globals.css with ALL token data');
+    log.success('Updated src/styles/globals.css with light/dark mode colors from Figma tokens');
     
     // Update tailwind.config.js
     const tailwindPath = path.join(this.outputDir, 'tailwind.config.js');
@@ -277,20 +279,27 @@ ${darkVars}  }
     fs.writeFileSync(tailwindPath, cleanConfig);
     log.success('Updated tailwind.config.js with buy/sell colors');
     
-    log.success('✅ ALL token data successfully applied!');
-    log.info('Your project now uses ALL colors from Figma tokens.');
+    log.success('✅ ALL token data successfully applied with light/dark mode support!');
+    log.info('Your project now uses different colors for light and dark modes from Figma tokens.');
   }
 
   // Generate comprehensive report
   async report() {
     log.title('📊 Comprehensive Token Report');
     
-    const allColors = this.extractAllColors();
+    const lightColors = this.extractColorsForMode('light');
+    const darkColors = this.extractColorsForMode('dark');
     
-    console.log(`ℹ Total Colors: ${Object.keys(allColors.light).length}`);
+    console.log(`ℹ Total Light Colors: ${Object.keys(lightColors).length}`);
+    console.log(`ℹ Total Dark Colors: ${Object.keys(darkColors).length}`);
     
-    console.log('\n🎨 ALL Colors from Figma tokens:');
-    Object.entries(allColors.light).forEach(([name, value]) => {
+    console.log('\n🎨 Light Mode Colors from Figma tokens:');
+    Object.entries(lightColors).forEach(([name, value]) => {
+      console.log(`ℹ   ${name}: ${value}`);
+    });
+    
+    console.log('\n🌙 Dark Mode Colors from Figma tokens:');
+    Object.entries(darkColors).forEach(([name, value]) => {
       console.log(`ℹ   ${name}: ${value}`);
     });
   }
@@ -315,7 +324,7 @@ program
     await processor.loadTokens();
     await processor.apply();
     log.success('\n🎉 Comprehensive token processing completed successfully!');
-    log.info('Your shadcn-ui project now has ALL token data from Figma.');
+    log.info('Your shadcn-ui project now has light/dark mode colors from Figma tokens.');
     log.info('Run `npm run dev` to see the changes.');
   });
 

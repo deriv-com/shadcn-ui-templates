@@ -4,112 +4,65 @@
 
 @layer base {
   :root {
-    --accent: 235 236 239;
-    --accent-foreground: 17 20 27;
+    --radius: 0.5rem;
+    
+    /* Light mode colors from Figma tokens */
+    --primary: 255 68 79;
+    --accent: 246 247 248;
     --background: 255 255 255;
     --border: 229 229 229;
     --card: 255 255 255;
     --card-foreground: 10 10 10;
     --destructive: 196 0 0;
     --destructive-foreground: 254 252 252;
+    --accent-foreground: 17 20 27;
     --foreground: 10 10 10;
-    --input: 0 0 0 0.07999999821186066;
+    --input: 0 0 0 / 0.07999999821186066;
     --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
     --popover: 255 255 255;
     --popover-foreground: 10 10 10;
-    --primary: 255 68 79;
     --primary-foreground: 255 255 255;
     --ring: 163 163 163;
     --secondary: 245 245 245;
     --secondary-foreground: 23 23 23;
-    --buy-background: 0 195 144;
-    --buy-foreground: 255 255 255;
-    --sell-background: 222 0 64;
-    --sell-foreground: 255 255 255;
-    --buy-20: 0 195 144 0.2;
-    --buy-40: 0 195 144 0.4;
-    --sell-20: 222 0 64 0.2;
-    --sell-40: 222 0 64 0.4;
-    --alpha-10: 255 255 255 0.8999999761581421;
-    --alpha-20: 255 255 255 0.800000011920929;
-    --alpha-30: 255 255 255 0.699999988079071;
-    --alpha-40: 255 255 255 0.6000000238418579;
-    --alpha-50: 255 255 255 0.5;
-    --alpha-60: 255 255 255 0.4000000059604645;
-    --alpha-70: 255 255 255 0.30000001192092896;
-    --alpha-80: 255 255 255 0.20000000298023224;
-    --alpha-90: 255 255 255 0.10000000149011612;
-    --ring-offset: 255 255 255;
+    --muted-foreground: 115 115 115;
     --chart-1: 234 88 12;
     --chart-2: 13 148 136;
     --chart-3: 22 78 99;
     --chart-4: 251 191 36;
     --chart-5: 245 158 11;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-primary: 23 23 23;
-    --sidebar-foreground: 10 10 10;
-    --sidebar: 255 255 255;
-    --sidebar-accent: 245 245 245;
-    --sidebar-accent-foreground: 23 23 23;
-    --sidebar-border: 229 229 229;
-    --sidebar-ring: 163 163 163;
-    --alpha-5: 255 255 255 0.949999988079071;
-    --radius: 0.5rem;
-  }
- 
-  .dark {
-    --accent: 17 20 27;
-    --accent-foreground: 246 247 248;
-    --background: 24 28 37;
-    --border: 255 255 255 0.10000000149011612;
-    --card: 23 23 23;
-    --card-foreground: 255 255 255;
-    --destructive: 255 126 136;
-    --destructive-foreground: 254 252 252;
-    --foreground: 255 255 255;
-    --input: 255 255 255 0.07999999821186066;
-    --muted: 38 38 38;
-    --muted-foreground: 163 163 163;
-    --popover: 38 38 38;
-    --popover-foreground: 255 255 255;
-    --primary: 255 68 79;
-    --primary-foreground: 255 255 255;
-    --ring: 115 115 115;
-    --secondary: 38 38 38;
-    --secondary-foreground: 255 255 255;
     --buy-background: 0 195 144;
     --buy-foreground: 255 255 255;
     --sell-background: 222 0 64;
     --sell-foreground: 255 255 255;
-    --buy-20: 0 195 144 0.4;
-    --buy-40: 0 195 144 0.6;
-    --sell-20: 222 0 64 0.4;
-    --sell-40: 222 0 64 0.6;
-    --alpha-10: 0 0 0 0.8999999761581421;
-    --alpha-20: 0 0 0 0.800000011920929;
-    --alpha-30: 0 0 0 0.699999988079071;
-    --alpha-40: 0 0 0 0.6000000238418579;
-    --alpha-50: 0 0 0 0.5;
-    --alpha-60: 0 0 0 0.4000000059604645;
-    --alpha-70: 0 0 0 0.30000001192092896;
-    --alpha-80: 0 0 0 0.20000000298023224;
-    --alpha-90: 0 0 0 0.10000000149011612;
-    --ring-offset: 24 28 37;
+  }
+
+  .dark {
+    /* Dark mode colors from Figma tokens */
+    --primary: 255 68 79;
+    --accent-foreground: 246 247 248;
+    --background: 24 28 37;
+    --border: 255 255 255 / 0.10000000149011612;
+    --card: 23 23 23;
+    --accent: 17 20 27;
+    --card-foreground: 255 255 255;
+    --destructive: 255 126 136;
+    --destructive-foreground: 254 252 252;
+    --foreground: 255 255 255;
+    --input: 255 255 255 / 0.07999999821186066;
+    --muted: 38 38 38;
+    --popover: 38 38 38;
+    --popover-foreground: 255 255 255;
+    --primary-foreground: 255 255 255;
+    --ring: 115 115 115;
+    --secondary: 38 38 38;
+    --secondary-foreground: 255 255 255;
+    --muted-foreground: 163 163 163;
     --chart-1: 29 78 216;
     --chart-2: 0 195 144;
     --chart-3: 245 158 11;
     --chart-4: 168 85 247;
     --chart-5: 222 0 64;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-primary: 29 78 216;
-    --sidebar-foreground: 255 255 255;
-    --sidebar: 23 23 23;
-    --sidebar-accent: 38 38 38;
-    --sidebar-accent-foreground: 255 255 255;
-    --sidebar-border: 255 255 255 0.10000000149011612;
-    --sidebar-ring: 82 82 82;
-    --alpha-5: 0 0 0 0.949999988079071;
   }
 }
 

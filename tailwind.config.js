@@ -51,6 +51,54 @@ module.exports = {
           DEFAULT: "rgb(var(--card) / <alpha-value>)",
           foreground: "rgb(var(--card-foreground) / <alpha-value>)",
         },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
         // Enhanced color palette from design tokens
         base: {
           "black": "rgb(0, 0, 0)",
