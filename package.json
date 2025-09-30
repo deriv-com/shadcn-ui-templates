@@ -26,7 +26,9 @@
     "type-check": "tsc --noEmit",
     "tokens:apply": "node scripts/process-tokens.js apply",
     "tokens:report": "node scripts/process-tokens.js report",
-    "tokens:validate": "node scripts/process-tokens.js validate"
+    "tokens:validate": "node scripts/process-tokens.js validate",
+    "registry:sync": "node scripts/sync-registry.js sync",
+    "registry:report": "node scripts/sync-registry.js report"
   },
   "keywords": [
     "shadcn",

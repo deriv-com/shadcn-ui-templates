@@ -444,3 +444,95 @@ npm run build
 **Note**: The difference is the base path configuration:
 - `build:local` uses `base: '/'` for local testing
 - `build` uses `base: '/shadcn-ui-templates/'` for GitHub Pages
+
+## 🚀 V0 Integration
+
+This template is optimized for V0 development workflows. Here's how to use it:
+
+### Quick Start for V0
+
+1. **Add the custom registry to your V0 project's `components.json`:**
+
+```json
+{
+  "registries": {
+    "default": "https://ui.shadcn.com/registry",
+    "deriv": "https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/registry/index.json"
+  }
+}
+```
+
+2. **Install components using the custom registry:**
+
+```bash
+# Install individual components
+npx shadcn@latest add --registry deriv button
+npx shadcn@latest add --registry deriv card
+
+# Install all components at once
+npx shadcn@latest add --registry deriv button card input textarea select checkbox radio-group switch slider progress badge avatar alert dialog sheet dropdown-menu navigation-menu tabs accordion collapsible separator skeleton toast
+```
+
+3. **Apply Figma design tokens:**
+
+```bash
+# Copy your Figma token files to override/ directory
+# Then run the token processor
+npm run tokens:apply
+```
+
+### Automated Setup
+
+Use the provided setup script for quick V0 integration:
+
+```bash
+# Download and run the setup script
+curl -sSL https://raw.githubusercontent.com/deriv-com/shadcn-ui-templates/master/setup-for-v0.sh | bash
+```
+
+### Custom Variants Available
+
+- **Buy/Sell Button Variants**: `<Button variant="buy">` and `<Button variant="sell">`
+- **All Figma Design Colors**: Automatically generated from your token files
+- **Light/Dark Mode Support**: Proper theme switching with different colors for each mode
+
+### V0 Best Practices
+
+1. **Use Semantic Colors**: Always use `bg-background`, `text-foreground`, etc. instead of hardcoded colors
+2. **Leverage Design Tokens**: Use `bg-chart-1`, `bg-chart-2`, etc. for consistent styling
+3. **Component Composition**: Build complex UIs by composing simple components
+
+For detailed V0 integration instructions, see [V0-INTEGRATION-GUIDE.md](./V0-INTEGRATION-GUIDE.md).
+
+
+## 🔄 Registry Synchronization
+
+The project includes an automated registry sync system to keep the V0 registry up-to-date with source components.
+
+### Manual Sync
+```bash
+# Sync registry with current components
+npm run registry:sync
+
+# Generate sync report
+npm run registry:report
+```
+
+### Automated Sync
+The registry is automatically synced via GitHub Actions when components are updated. The sync process:
+
+- ✅ Copies all 43 components from `src/components/ui/` to `registry/ui/`
+- ✅ Copies utilities from `src/lib/` to `registry/lib/`
+- ✅ Copies hooks from `src/hooks/` to `registry/hooks/`
+- ✅ Generates updated `registry/index.json` with component metadata
+- ✅ Maintains component dependencies and relationships
+
+### What Gets Synced
+- **Components**: All shadcn/ui components with custom variants
+- **Utilities**: `utils.ts` with `cn` function
+- **Hooks**: `use-toast.ts` for toast notifications
+- **Dependencies**: Component import relationships
+- **Metadata**: Component types, files, and registry information
+
+The registry is always kept in sync with the source components, ensuring V0 users get the latest versions automatically.
+
