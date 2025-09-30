@@ -34,7 +34,7 @@ import {
   Download, 
   Upload, 
   Edit, 
-  Bold,
+  Database, Bold,
   Italic,
   Underline
 } from "lucide-react"
@@ -211,7 +211,7 @@ function App() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Table className="h-6 w-6" />
+                <Database className="h-6 w-6" />
                 Data Display
               </CardTitle>
               <CardDescription>Tables, badges, avatars, and data components</CardDescription>
