@@ -8,11 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@/components": path.resolve(__dirname, "./src/components"),
-      "@/lib": path.resolve(__dirname, "./src/lib"),
-      "@/hooks": path.resolve(__dirname, "./src/hooks"),
-      "@/types": path.resolve(__dirname, "./src/types"),
-      "@/styles": path.resolve(__dirname, "./src/styles"),
     },
-  }
-}) 
+  },
+  base: '/shadcn-ui-templates/',
+})
