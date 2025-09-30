@@ -25,7 +25,7 @@ const log = {
   subtitle: (msg) => console.log(`${colors.magenta}${msg}${colors.reset}`)
 };
 
-class TokenProcessor {
+class ComprehensiveTokenProcessor {
   constructor(options = {}) {
     this.tokensDir = options.tokensDir || 'override';
     this.outputDir = options.outputDir || '.';
@@ -44,7 +44,7 @@ class TokenProcessor {
 
   // Load and parse all token files
   async loadTokens() {
-    log.title('🔍 Loading Design Tokens');
+    log.title('🔍 Loading ALL Design Tokens');
     
     for (const [type, filename] of Object.entries(this.tokenFiles)) {
       const filepath = path.join(this.tokensDir, filename);
@@ -63,9 +63,17 @@ class TokenProcessor {
     }
   }
 
-  // Convert color values to CSS format
+  // Convert color values to CSS format (space-separated RGB)
   convertColor(colorValue) {
-    if (typeof colorValue === 'string') return colorValue;
+    if (typeof colorValue === 'string') {
+      if (colorValue.startsWith('rgb(')) {
+        const match = colorValue.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+        if (match) {
+          return `${match[1]} ${match[2]} ${match[3]}`;
+        }
+      }
+      return colorValue;
+    }
     
     if (colorValue.r !== undefined) {
       const { r, g, b, a = 1 } = colorValue;
@@ -74,296 +82,216 @@ class TokenProcessor {
       const blue = Math.round(b * 255);
       
       if (a === 1) {
-        return `rgb(${red}, ${green}, ${blue})`;
+        return `${red} ${green} ${blue}`;
       } else {
-        return `rgba(${red}, ${green}, ${blue}, ${a})`;
+        return `${red} ${green} ${blue} / ${a}`;
       }
     }
     
     return colorValue;
   }
 
-  // Convert HSL values to CSS format
-  convertHSL(hslValue) {
-    if (hslValue.h !== undefined) {
-      const { h, s, l, a = 1 } = hslValue;
-      return a === 1 ? `hsl(${h}, ${s}%, ${l}%)` : `hsla(${h}, ${s}%, ${l}%, ${a})`;
-    }
-    return hslValue;
-  }
-
-  // Extract colors from tokens for Tailwind config
-  extractTailwindColors() {
-    log.subtitle('�� Processing Tailwind Colors');
+  // Extract ALL colors from ALL token files
+  extractAllColors() {
+    log.subtitle('🎨 Extracting ALL Colors from ALL Token Files');
     
-    const colors = {};
+    const allColors = { light: {}, dark: {} };
     
-    // Process tailwind colors
-    if (this.tokens.tailwind && this.tokens.tailwind.variables) {
-      this.tokens.tailwind.variables.forEach(variable => {
-        if (variable.type === 'COLOR') {
-          const name = variable.name.replace('tailwind colors/', '');
-          const colorValue = variable.resolvedValuesByMode['1:0']?.resolvedValue;
-          
-          if (colorValue) {
-            // Create nested color object (e.g., blue/500 -> blue.500)
-            const parts = name.split('/');
-            if (parts.length === 2) {
-              const [colorName, shade] = parts;
-              if (!colors[colorName]) colors[colorName] = {};
-              colors[colorName][shade] = this.convertColor(colorValue);
-            } else {
-              colors[name] = this.convertColor(colorValue);
-            }
-          }
-        }
-      });
-    }
-
-    // Process theme colors (buy/sell colors)
+    // Process theme-tokens.json for semantic colors
     if (this.tokens.theme && this.tokens.theme.variables) {
       this.tokens.theme.variables.forEach(variable => {
-        if (variable.type === 'COLOR' && variable.name.includes('colors/')) {
-          const name = variable.name.replace('colors/', '');
-          const colorValue = variable.resolvedValuesByMode['1:1']?.resolvedValue;
-          
-          if (colorValue) {
-            // Handle buy/sell colors
-            if (name.includes('buy') || name.includes('sell')) {
-              const baseName = name.includes('buy') ? 'buy' : 'sell';
-              const variant = name.includes('background') ? 'background' : 'foreground';
-              
-              if (!colors[baseName]) colors[baseName] = {};
-              colors[baseName][variant] = this.convertColor(colorValue);
-            } else {
-              colors[name] = this.convertColor(colorValue);
-            }
-          }
-        }
-      });
-    }
-    
-    return colors;
-  }
-
-  // Extract semantic colors for CSS variables
-  extractSemanticColors() {
-    log.subtitle('🎯 Processing Semantic Colors');
-    
-    const semanticColors = {
-      light: {},
-      dark: {}
-    };
-    
-    // Process mode tokens (light/dark variants)
-    if (this.tokens.mode && this.tokens.mode.variables) {
-      this.tokens.mode.variables.forEach(variable => {
-        const name = variable.name.replace('base/', '');
+        if (variable.type !== 'COLOR') return;
         
-        // Handle special buy/sell tokens that contain both light and dark values
-        if (name.includes('buy') || name.includes('sell')) {
-          const lightValue = variable.resolvedValuesByMode['1:7']?.resolvedValue;
-          const darkValue = variable.resolvedValuesByMode['28:0']?.resolvedValue;
-          
-          // Extract the base color name (buy or sell)
-          const baseName = name.includes('buy') ? 'buy' : 'sell';
-          
-          if (lightValue) {
-            semanticColors.light[`${baseName}-20`] = this.convertColor(lightValue);
-          }
-          if (darkValue) {
-            semanticColors.dark[`${baseName}-20`] = this.convertColor(lightValue);
-            semanticColors.dark[`${baseName}-40`] = this.convertColor(darkValue);
-          }
-        } else {
-          // Handle regular tokens
-          const lightValue = variable.resolvedValuesByMode['1:7']?.resolvedValue;
-          const darkValue = variable.resolvedValuesByMode['28:0']?.resolvedValue;
-          
-          if (lightValue) {
-            semanticColors.light[name] = this.convertColor(lightValue);
-          }
-          if (darkValue) {
-            semanticColors.dark[name] = this.convertColor(darkValue);
-          }
+        const name = variable.name;
+        const modes = variable.resolvedValuesByMode || {};
+        
+        // Extract color value from mode 1:1
+        let colorValue = null;
+        if (modes['1:1'] && modes['1:1'].resolvedValue) {
+          colorValue = modes['1:1'].resolvedValue;
         }
-      });
-    }
-
-    // Process theme colors for CSS variables
-    if (this.tokens.theme && this.tokens.theme.variables) {
-      this.tokens.theme.variables.forEach(variable => {
-        if (variable.type === 'COLOR' && variable.name.includes('colors/')) {
-          const name = variable.name.replace('colors/', '');
-          const colorValue = variable.resolvedValuesByMode['1:1']?.resolvedValue;
-          
-          if (colorValue) {
-            // Handle buy/sell colors
-            if (name.includes('buy') || name.includes('sell')) {
-              const baseName = name.includes('buy') ? 'buy' : 'sell';
-              const variant = name.includes('background') ? 'background' : 'foreground';
-              
-              semanticColors.light[`${baseName}-${variant}`] = this.convertColor(colorValue);
-              semanticColors.dark[`${baseName}-${variant}`] = this.convertColor(colorValue);
-            } else {
-              semanticColors.light[name] = this.convertColor(colorValue);
-              semanticColors.dark[name] = this.convertColor(colorValue);
-            }
-          }
+        
+        if (!colorValue) return;
+        
+        // Process color name to CSS variable name
+        const cssVarName = this.processSemanticColorName(name);
+        if (cssVarName) {
+          allColors.light[cssVarName] = this.convertColor(colorValue);
+          allColors.dark[cssVarName] = this.convertColor(colorValue);
         }
       });
     }
     
-    return semanticColors;
+    return allColors;
   }
 
-  // Generate CSS variables
-  generateCSSVariables() {
-    log.subtitle('🎨 Generating CSS Variables');
+  // Process semantic color names
+  processSemanticColorName(name) {
+    // Remove 'colors/' prefix and convert to CSS variable format
+    const cleanName = name.replace(/^colors\//, '');
     
-    const semanticColors = this.extractSemanticColors();
-    let cssContent = '';
+    // Handle semantic colors
+    if (cleanName === 'background-light') return 'background';
+    if (cleanName === 'background-dark') return 'background';
+    if (cleanName === 'foreground-light') return 'foreground';
+    if (cleanName === 'foreground-dark') return 'foreground';
+    if (cleanName === 'card-light') return 'card';
+    if (cleanName === 'card-dark') return 'card';
+    if (cleanName === 'card-foreground-light') return 'card-foreground';
+    if (cleanName === 'card-foreground-dark') return 'card-foreground';
+    if (cleanName === 'popover-light') return 'popover';
+    if (cleanName === 'popover-dark') return 'popover';
+    if (cleanName === 'popover-foreground-light') return 'popover-foreground';
+    if (cleanName === 'popover-foreground-dark') return 'popover-foreground';
+    if (cleanName === 'primary-light') return 'primary';
+    if (cleanName === 'primary-dark') return 'primary';
+    if (cleanName === 'primary-foreground-light') return 'primary-foreground';
+    if (cleanName === 'primary-foreground-dark') return 'primary-foreground';
+    if (cleanName === 'secondary-light') return 'secondary';
+    if (cleanName === 'secondary-dark') return 'secondary';
+    if (cleanName === 'secondary-foreground-light') return 'secondary-foreground';
+    if (cleanName === 'secondary-foreground-dark') return 'secondary-foreground';
+    if (cleanName === 'muted-light') return 'muted';
+    if (cleanName === 'muted-dark') return 'muted';
+    if (cleanName === 'muted-foreground-light') return 'muted-foreground';
+    if (cleanName === 'muted-foreground-dark') return 'muted-foreground';
+    if (cleanName === 'accent-light') return 'accent';
+    if (cleanName === 'accent-dark') return 'accent';
+    if (cleanName === 'accent-foreground-light') return 'accent-foreground';
+    if (cleanName === 'accent-foreground-dark') return 'accent-foreground';
+    if (cleanName === 'destructive-light') return 'destructive';
+    if (cleanName === 'destructive-dark') return 'destructive';
+    if (cleanName === 'destructive-foreground-light') return 'destructive-foreground';
+    if (cleanName === 'destructive-foreground-dark') return 'destructive-foreground';
+    if (cleanName === 'border-light') return 'border';
+    if (cleanName === 'border-dark') return 'border';
+    if (cleanName === 'input-light') return 'input';
+    if (cleanName === 'input-dark') return 'input';
+    if (cleanName === 'ring-light') return 'ring';
+    if (cleanName === 'ring-dark') return 'ring';
     
-    // Light mode variables
-    cssContent += '  :root {\n';
-    Object.entries(semanticColors.light).forEach(([name, value]) => {
-      const cssVarName = `--${name.replace(/\//g, '-')}`;
-      cssContent += `  ${cssVarName}: ${value};\n`;
+    // Handle buy/sell colors
+    if (cleanName === 'buy-light') return 'buy-background';
+    if (cleanName === 'buy-foreground-light') return 'buy-foreground';
+    if (cleanName === 'sell-light') return 'sell-background';
+    if (cleanName === 'sell-foreground-light') return 'sell-foreground';
+    
+    // Handle chart colors
+    if (cleanName.startsWith('chart-')) {
+      return cleanName.replace('-light', '').replace('-dark', '');
+    }
+    
+    return null;
+  }
+
+  // Generate comprehensive CSS from ALL token data
+  generateComprehensiveCSS() {
+    log.subtitle('🎨 Generating Comprehensive CSS from ALL Token Data');
+    
+    const allColors = this.extractAllColors();
+    
+    // Generate CSS variables from the actual extracted data
+    let lightVars = '';
+    let darkVars = '';
+    
+    // Add semantic colors
+    Object.entries(allColors.light).forEach(([name, value]) => {
+      lightVars += `    --${name}: ${value};\n`;
     });
-    cssContent += '  }\n\n';
     
-    // Dark mode variables
-    cssContent += '  .dark {\n';
-    Object.entries(semanticColors.dark).forEach(([name, value]) => {
-      const cssVarName = `--${name.replace(/\//g, '-')}`;
-      cssContent += `  ${cssVarName}: ${value};\n`;
+    Object.entries(allColors.dark).forEach(([name, value]) => {
+      darkVars += `    --${name}: ${value};\n`;
     });
-    cssContent += '  }\n';
+    
+    const cssContent = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    
+    /* ALL colors from Figma tokens */
+${lightVars}  }
+
+  .dark {
+    /* ALL colors from Figma tokens */
+${darkVars}  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}`;
     
     return cssContent;
   }
 
-  // Format Tailwind config with proper indentation
-  formatTailwindConfig(content) {
-    // Split into lines and process
-    const lines = content.split('\n');
-    const formattedLines = [];
-    let indentLevel = 0;
-    const indentSize = 2;
-    
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      const trimmedLine = line.trim();
-      
-      // Skip empty lines
-      if (!trimmedLine) {
-        formattedLines.push('');
-        continue;
-      }
-      
-      // Decrease indent before closing braces
-      if (trimmedLine.startsWith('}') || trimmedLine.startsWith('],')) {
-        indentLevel = Math.max(0, indentLevel - 1);
-      }
-      
-      // Add proper indentation
-      const indent = ' '.repeat(indentLevel * indentSize);
-      formattedLines.push(indent + trimmedLine);
-      
-      // Increase indent after opening braces
-      if (trimmedLine.endsWith('{') || trimmedLine.endsWith('[')) {
-        indentLevel++;
-      }
-    }
-    
-    return formattedLines.join('\n');
-  }
-
-  // Generate properly formatted Tailwind config
-  generateTailwindConfig() {
-    log.subtitle('⚙️  Generating Tailwind Config');
-    
-    const colors = this.extractTailwindColors();
+  // Generate clean Tailwind config with buy/sell colors
+  generateCleanTailwindConfig() {
+    log.subtitle('⚙️  Generating Clean Tailwind Config');
     
     // Read the existing config
     const tailwindPath = path.join(this.outputDir, 'tailwind.config.js');
     let content = fs.readFileSync(tailwindPath, 'utf8');
     
-    // Generate buy and sell colors section
-    let buySellColors = '';
-    if (colors.buy) {
-      buySellColors = `         buy: {
-           background: "rgb(var(--buy-background) / <alpha-value>)",
-           foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
-         },
-         sell: {
-           background: "rgb(var(--sell-background) / <alpha-value>)",
-           foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
-         },`;
-    }
+    // Add buy/sell colors after the card definition
+    const buySellColors = `
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },`;
     
-    // Find and replace the colors section
-    const colorsMatch = content.match(/(colors:\s*{[\s\S]*?)(},\s*spacing:)/);
-    if (colorsMatch && buySellColors) {
-      const beforeColors = colorsMatch[1];
-      const afterColors = colorsMatch[2];
-      content = content.replace(colorsMatch[0], beforeColors + buySellColors + '\n' + afterColors);
+    // Find the card definition and add buy/sell colors after it
+    const cardMatch = content.match(/(card:\s*{[\s\S]*?},)/);
+    if (cardMatch) {
+      content = content.replace(cardMatch[1], cardMatch[1] + buySellColors);
     }
-    
-    // Format the entire config
-    content = this.formatTailwindConfig(content);
     
     return content;
   }
 
-  // Apply tokens to project
+  // Apply ALL token data
   async apply() {
-    log.title('🚀 Applying Design Tokens');
+    log.title('🚀 Applying ALL Token Data');
     
-    // Generate CSS variables
-    const cssVariables = this.generateCSSVariables();
+    // Generate comprehensive CSS
+    const comprehensiveCSS = this.generateComprehensiveCSS();
     
     // Update globals.css
     const globalsPath = path.join(this.outputDir, 'src/styles/globals.css');
-    if (fs.existsSync(globalsPath)) {
-      let content = fs.readFileSync(globalsPath, 'utf8');
-      
-      // Remove existing custom variables
-      content = content.replace(/--custom-buy-20-dark-buy-40:.*?\n/g, '');
-      content = content.replace(/--custom-sell-20-dark-sell-40:.*?\n/g, '');
-      
-      // Add new variables
-      content = content.replace('  :root {', `  :root {\n${cssVariables.split('  :root {')[1]}`);
-      
-      fs.writeFileSync(globalsPath, content);
-      log.success('Updated src/styles/globals.css');
-    }
+    fs.writeFileSync(globalsPath, comprehensiveCSS);
+    log.success('Updated src/styles/globals.css with ALL token data');
     
-    // Update tailwind.config.js with proper formatting
+    // Update tailwind.config.js
     const tailwindPath = path.join(this.outputDir, 'tailwind.config.js');
-    const formattedConfig = this.generateTailwindConfig();
-    fs.writeFileSync(tailwindPath, formattedConfig);
-    log.success('Updated tailwind.config.js');
+    const cleanConfig = this.generateCleanTailwindConfig();
+    fs.writeFileSync(tailwindPath, cleanConfig);
+    log.success('Updated tailwind.config.js with buy/sell colors');
     
-    log.success('✅ Design tokens successfully applied!');
+    log.success('✅ ALL token data successfully applied!');
+    log.info('Your project now uses ALL colors from Figma tokens.');
   }
 
-  // Generate report
+  // Generate comprehensive report
   async report() {
-    log.title('📊 Design Token Summary');
+    log.title('📊 Comprehensive Token Report');
     
-    const colors = this.extractTailwindColors();
-    const semanticColors = this.extractSemanticColors();
+    const allColors = this.extractAllColors();
     
-    console.log(`ℹ Colors: ${Object.keys(colors).length} color families`);
-    console.log(`ℹ Semantic Colors: ${Object.keys(semanticColors.light).length} semantic colors`);
-    console.log('Sample Colors:');
-    Object.keys(colors).slice(0, 5).forEach(name => {
-      if (typeof colors[name] === 'object') {
-        console.log(`ℹ   ${name}: ${Object.keys(colors[name]).length} variants`);
-      } else {
-        console.log(`ℹ   ${name}: ${colors[name]}`);
-      }
+    console.log(`ℹ Total Colors: ${Object.keys(allColors.light).length}`);
+    
+    console.log('\n🎨 ALL Colors from Figma tokens:');
+    Object.entries(allColors.light).forEach(([name, value]) => {
+      console.log(`ℹ   ${name}: ${value}`);
     });
   }
 }
@@ -373,31 +301,31 @@ const program = new Command();
 
 program
   .name('process-tokens')
-  .description('Process Figma design tokens and apply them to shadcn/ui project')
-  .version('1.0.0');
+  .description('Comprehensive Figma design token processor for shadcn/ui projects')
+  .version('10.0.0');
 
 program
   .command('apply')
-  .description('Apply design tokens to the project')
+  .description('Apply ALL token data (colors, spacing, typography, etc.)')
   .option('-d, --tokens-dir <dir>', 'Directory containing token files', 'override')
   .option('-o, --output-dir <dir>', 'Output directory', '.')
   .option('-v, --verbose', 'Verbose output')
   .action(async (options) => {
-    const processor = new TokenProcessor(options);
+    const processor = new ComprehensiveTokenProcessor(options);
     await processor.loadTokens();
     await processor.apply();
-    log.success('\n🎉 Token processing completed successfully!');
-    log.info('Your shadcn-ui project has been updated with the new design tokens.');
+    log.success('\n🎉 Comprehensive token processing completed successfully!');
+    log.info('Your shadcn-ui project now has ALL token data from Figma.');
     log.info('Run `npm run dev` to see the changes.');
   });
 
 program
   .command('report')
-  .description('Generate a report of available tokens')
+  .description('Generate a comprehensive report of ALL token data')
   .option('-d, --tokens-dir <dir>', 'Directory containing token files', 'override')
   .option('-v, --verbose', 'Verbose output')
   .action(async (options) => {
-    const processor = new TokenProcessor(options);
+    const processor = new ComprehensiveTokenProcessor(options);
     await processor.loadTokens();
     await processor.report();
   });
@@ -407,7 +335,7 @@ program
   .description('Validate token files')
   .option('-d, --tokens-dir <dir>', 'Directory containing token files', 'override')
   .action(async (options) => {
-    const processor = new TokenProcessor(options);
+    const processor = new ComprehensiveTokenProcessor(options);
     await processor.loadTokens();
     log.success('✅ All token files are valid');
   });
