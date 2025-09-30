@@ -423,3 +423,24 @@ MIT License - see LICENSE file for details.
 - [ ] Advanced customization guides
 - [ ] Performance optimizations
 - [ ] Accessibility improvements 
+## Local Development & Testing
+
+### Build for Local Testing
+```bash
+# Build for local testing (without GitHub Pages base path)
+npm run build:local
+
+# Build and serve locally
+npm run preview:local
+# Then visit http://localhost:8080
+```
+
+### Build for GitHub Pages
+```bash
+# Build for GitHub Pages deployment
+npm run build
+```
+
+**Note**: The difference is the base path configuration:
+- `build:local` uses `base: '/'` for local testing
+- `build` uses `base: '/shadcn-ui-templates/'` for GitHub Pages
