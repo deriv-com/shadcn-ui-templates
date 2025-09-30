@@ -49,22 +49,21 @@ class TokenProcessor {
     for (const [type, filename] of Object.entries(this.tokenFiles)) {
       const filepath = path.join(this.tokensDir, filename);
       
-      if (!fs.existsSync(filepath)) {
-        log.warning(`Token file not found: ${filepath}`);
-        continue;
-      }
-      
-      try {
-        const content = fs.readFileSync(filepath, 'utf8');
-        this.tokens[type] = JSON.parse(content);
-        log.success(`Loaded ${type} tokens (${this.getFileSize(filepath)})`);
-      } catch (error) {
-        log.error(`Failed to load ${type} tokens: ${error.message}`);
+      if (fs.existsSync(filepath)) {
+        try {
+          const data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+          this.tokens[type] = data;
+          log.success(`Loaded ${type} tokens (${(fs.statSync(filepath).size / 1024).toFixed(1)}KB)`);
+        } catch (error) {
+          log.error(`Failed to load ${filename}: ${error.message}`);
+        }
+      } else {
+        log.warning(`Token file not found: ${filename}`);
       }
     }
   }
 
-  // Convert Figma color values to CSS/Tailwind format
+  // Convert color values to CSS format
   convertColor(colorValue) {
     if (typeof colorValue === 'string') return colorValue;
     
@@ -88,26 +87,18 @@ class TokenProcessor {
   convertHSL(hslValue) {
     if (hslValue.h !== undefined) {
       const { h, s, l, a = 1 } = hslValue;
-      const hue = Math.round(h * 360);
-      const saturation = Math.round(s * 100);
-      const lightness = Math.round(l * 100);
-      
-      if (a === 1) {
-        return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-      } else {
-        return `hsla(${hue}, ${saturation}%, ${lightness}%, ${a})`;
-      }
+      return a === 1 ? `hsl(${h}, ${s}%, ${l}%)` : `hsla(${h}, ${s}%, ${l}%, ${a})`;
     }
-    
     return hslValue;
   }
 
   // Extract colors from tokens for Tailwind config
   extractTailwindColors() {
-    log.subtitle('🎨 Processing Tailwind Colors');
+    log.subtitle('�� Processing Tailwind Colors');
     
     const colors = {};
     
+    // Process tailwind colors
     if (this.tokens.tailwind && this.tokens.tailwind.variables) {
       this.tokens.tailwind.variables.forEach(variable => {
         if (variable.type === 'COLOR') {
@@ -128,6 +119,29 @@ class TokenProcessor {
         }
       });
     }
+
+    // Process theme colors (buy/sell colors)
+    if (this.tokens.theme && this.tokens.theme.variables) {
+      this.tokens.theme.variables.forEach(variable => {
+        if (variable.type === 'COLOR' && variable.name.includes('colors/')) {
+          const name = variable.name.replace('colors/', '');
+          const colorValue = variable.resolvedValuesByMode['1:1']?.resolvedValue;
+          
+          if (colorValue) {
+            // Handle buy/sell colors
+            if (name.includes('buy') || name.includes('sell')) {
+              const baseName = name.includes('buy') ? 'buy' : 'sell';
+              const variant = name.includes('background') ? 'background' : 'foreground';
+              
+              if (!colors[baseName]) colors[baseName] = {};
+              colors[baseName][variant] = this.convertColor(colorValue);
+            } else {
+              colors[name] = this.convertColor(colorValue);
+            }
+          }
+        }
+      });
+    }
     
     return colors;
   }
@@ -141,17 +155,61 @@ class TokenProcessor {
       dark: {}
     };
     
+    // Process mode tokens (light/dark variants)
     if (this.tokens.mode && this.tokens.mode.variables) {
       this.tokens.mode.variables.forEach(variable => {
         const name = variable.name.replace('base/', '');
-        const lightValue = variable.resolvedValuesByMode['1:7']?.resolvedValue;
-        const darkValue = variable.resolvedValuesByMode['28:0']?.resolvedValue;
         
-        if (lightValue) {
-          semanticColors.light[name] = this.convertColor(lightValue);
+        // Handle special buy/sell tokens that contain both light and dark values
+        if (name.includes('buy') || name.includes('sell')) {
+          const lightValue = variable.resolvedValuesByMode['1:7']?.resolvedValue;
+          const darkValue = variable.resolvedValuesByMode['28:0']?.resolvedValue;
+          
+          // Extract the base color name (buy or sell)
+          const baseName = name.includes('buy') ? 'buy' : 'sell';
+          
+          if (lightValue) {
+            semanticColors.light[`${baseName}-20`] = this.convertColor(lightValue);
+          }
+          if (darkValue) {
+            semanticColors.dark[`${baseName}-20`] = this.convertColor(lightValue);
+            semanticColors.dark[`${baseName}-40`] = this.convertColor(darkValue);
+          }
+        } else {
+          // Handle regular tokens
+          const lightValue = variable.resolvedValuesByMode['1:7']?.resolvedValue;
+          const darkValue = variable.resolvedValuesByMode['28:0']?.resolvedValue;
+          
+          if (lightValue) {
+            semanticColors.light[name] = this.convertColor(lightValue);
+          }
+          if (darkValue) {
+            semanticColors.dark[name] = this.convertColor(darkValue);
+          }
         }
-        if (darkValue) {
-          semanticColors.dark[name] = this.convertColor(darkValue);
+      });
+    }
+
+    // Process theme colors for CSS variables
+    if (this.tokens.theme && this.tokens.theme.variables) {
+      this.tokens.theme.variables.forEach(variable => {
+        if (variable.type === 'COLOR' && variable.name.includes('colors/')) {
+          const name = variable.name.replace('colors/', '');
+          const colorValue = variable.resolvedValuesByMode['1:1']?.resolvedValue;
+          
+          if (colorValue) {
+            // Handle buy/sell colors
+            if (name.includes('buy') || name.includes('sell')) {
+              const baseName = name.includes('buy') ? 'buy' : 'sell';
+              const variant = name.includes('background') ? 'background' : 'foreground';
+              
+              semanticColors.light[`${baseName}-${variant}`] = this.convertColor(colorValue);
+              semanticColors.dark[`${baseName}-${variant}`] = this.convertColor(colorValue);
+            } else {
+              semanticColors.light[name] = this.convertColor(colorValue);
+              semanticColors.dark[name] = this.convertColor(colorValue);
+            }
+          }
         }
       });
     }
@@ -159,421 +217,199 @@ class TokenProcessor {
     return semanticColors;
   }
 
-  // Extract typography tokens
-  extractTypography() {
-    log.subtitle('📝 Processing Typography');
-    
-    const typography = {};
-    
-    // Process custom responsive typography
-    if (this.tokens.custom && this.tokens.custom.variables) {
-      this.tokens.custom.variables.forEach(variable => {
-        const name = variable.name;
-        
-        if (name.includes('heading-')) {
-          const [heading, property] = name.split('/');
-          const desktopValue = variable.resolvedValuesByMode['17548:0']?.resolvedValue;
-          const mobileValue = variable.resolvedValuesByMode['17548:1']?.resolvedValue;
-          
-          if (!typography[heading]) typography[heading] = {};
-          
-          typography[heading][property] = {
-            desktop: desktopValue,
-            mobile: mobileValue
-          };
-        }
-      });
-    }
-    
-    // Process theme typography
-    if (this.tokens.theme && this.tokens.theme.variables) {
-      this.tokens.theme.variables.forEach(variable => {
-        if (variable.name.includes('text/') || variable.name.includes('font/')) {
-          const name = variable.name.replace('text/', '').replace('font/', '');
-          const value = variable.resolvedValuesByMode['1:1']?.resolvedValue;
-          
-          if (value !== undefined) {
-            if (!typography.base) typography.base = {};
-            typography.base[name] = value;
-          }
-        }
-      });
-    }
-    
-    return typography;
-  }
-
-  // Extract spacing tokens
-  extractSpacing() {
-    log.subtitle('📏 Processing Spacing');
-    
-    const spacing = {};
-    
-    if (this.tokens.tailwind && this.tokens.tailwind.variables) {
-      this.tokens.tailwind.variables.forEach(variable => {
-        if (variable.name.includes('spacing/') && variable.type === 'FLOAT') {
-          const name = variable.name.replace('spacing/', '');
-          const value = variable.resolvedValuesByMode['1:0']?.resolvedValue;
-          
-          if (value !== undefined) {
-            spacing[name] = `${value}px`;
-          }
-        }
-      });
-    }
-    
-    return spacing;
-  }
-
-  // Generate updated Tailwind config
-  generateTailwindConfig() {
-    log.subtitle('⚙️  Generating Tailwind Config');
-    
-    const colors = this.extractTailwindColors();
-    const spacing = this.extractSpacing();
-    
-    const config = `/** @type {import('tailwindcss').Config} */
-module.exports = {
-  darkMode: ["class"],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-  ],
-  prefix: "",
-  theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
-    extend: {
-             colors: {
-         border: "rgb(var(--border) / <alpha-value>)",
-         input: "rgb(var(--input) / <alpha-value>)",
-         ring: "rgb(var(--ring) / <alpha-value>)",
-         background: "rgb(var(--background) / <alpha-value>)",
-         foreground: "rgb(var(--foreground) / <alpha-value>)",
-         primary: {
-           DEFAULT: "rgb(var(--primary) / <alpha-value>)",
-           foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
-         },
-         secondary: {
-           DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
-           foreground: "rgb(var(--secondary-foreground) / <alpha-value>)",
-         },
-         destructive: {
-           DEFAULT: "rgb(var(--destructive) / <alpha-value>)",
-           foreground: "rgb(var(--destructive-foreground) / <alpha-value>)",
-         },
-         muted: {
-           DEFAULT: "rgb(var(--muted) / <alpha-value>)",
-           foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
-         },
-         accent: {
-           DEFAULT: "rgb(var(--accent) / <alpha-value>)",
-           foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
-         },
-         popover: {
-           DEFAULT: "rgb(var(--popover) / <alpha-value>)",
-           foreground: "rgb(var(--popover-foreground) / <alpha-value>)",
-         },
-         card: {
-           DEFAULT: "rgb(var(--card) / <alpha-value>)",
-           foreground: "rgb(var(--card-foreground) / <alpha-value>)",
-         },
-                    // Enhanced color palette from design tokens
-            ${Object.entries(colors).map(([colorName, colorShades]) => {
-              if (typeof colorShades === 'object' && colorShades !== null) {
-                return `${colorName}: ${JSON.stringify(colorShades, null, 10)},`;
-              } else {
-                return `"${colorName}": "${colorShades}",`;
-              }
-            }).join('\n        ')}
-      },
-                spacing: ${JSON.stringify(spacing, null, 8)},
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
-    },
-  },
-  plugins: [require("tailwindcss-animate")],
-}`;
-    
-    return config;
-  }
-
-  // Sanitize CSS variable names
-  sanitizeVariableName(name) {
-    return name
-      .replace(/[^a-zA-Z0-9-_]/g, '-')  // Replace invalid chars with hyphens
-      .replace(/-+/g, '-')              // Collapse multiple hyphens
-      .replace(/^-|-$/g, '')            // Remove leading/trailing hyphens
-      .toLowerCase();
-  }
-
-  // Generate CSS variables for globals.css
+  // Generate CSS variables
   generateCSSVariables() {
     log.subtitle('🎨 Generating CSS Variables');
     
     const semanticColors = this.extractSemanticColors();
+    let cssContent = '';
     
-          const lightVars = Object.entries(semanticColors.light)
-        .map(([name, value]) => {
-          const sanitizedName = this.sanitizeVariableName(name);
-          // Convert RGB/RGBA values to space-separated format for modern CSS
-          if (typeof value === 'string' && value.startsWith('rgb')) {
-            const cleanValue = value.replace('rgb(', '').replace('rgba(', '').replace(')', '');
-            // Convert comma-separated to space-separated for modern CSS rgb() syntax
-            const spaceSeparated = cleanValue.replace(/,\s*/g, ' ');
-            return `  --${sanitizedName}: ${spaceSeparated};`;
-          }
-          return `  --${sanitizedName}: ${value};`;
-        })
-        .join('\n');
+    // Light mode variables
+    cssContent += '  :root {\n';
+    Object.entries(semanticColors.light).forEach(([name, value]) => {
+      const cssVarName = `--${name.replace(/\//g, '-')}`;
+      cssContent += `  ${cssVarName}: ${value};\n`;
+    });
+    cssContent += '  }\n\n';
+    
+    // Dark mode variables
+    cssContent += '  .dark {\n';
+    Object.entries(semanticColors.dark).forEach(([name, value]) => {
+      const cssVarName = `--${name.replace(/\//g, '-')}`;
+      cssContent += `  ${cssVarName}: ${value};\n`;
+    });
+    cssContent += '  }\n';
+    
+    return cssContent;
+  }
+
+  // Format Tailwind config with proper indentation
+  formatTailwindConfig(content) {
+    // Split into lines and process
+    const lines = content.split('\n');
+    const formattedLines = [];
+    let indentLevel = 0;
+    const indentSize = 2;
+    
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      const trimmedLine = line.trim();
       
-      const darkVars = Object.entries(semanticColors.dark)
-        .map(([name, value]) => {
-          const sanitizedName = this.sanitizeVariableName(name);
-          if (typeof value === 'string' && value.startsWith('rgb')) {
-            const cleanValue = value.replace('rgb(', '').replace('rgba(', '').replace(')', '');
-            // Convert comma-separated to space-separated for modern CSS rgb() syntax
-            const spaceSeparated = cleanValue.replace(/,\s*/g, ' ');
-            return `  --${sanitizedName}: ${spaceSeparated};`;
-          }
-          return `  --${sanitizedName}: ${value};`;
-        })
-        .join('\n');
+      // Skip empty lines
+      if (!trimmedLine) {
+        formattedLines.push('');
+        continue;
+      }
+      
+      // Decrease indent before closing braces
+      if (trimmedLine.startsWith('}') || trimmedLine.startsWith('],')) {
+        indentLevel = Math.max(0, indentLevel - 1);
+      }
+      
+      // Add proper indentation
+      const indent = ' '.repeat(indentLevel * indentSize);
+      formattedLines.push(indent + trimmedLine);
+      
+      // Increase indent after opening braces
+      if (trimmedLine.endsWith('{') || trimmedLine.endsWith('[')) {
+        indentLevel++;
+      }
+    }
     
-    return `@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-${lightVars}
-    --radius: 0.5rem;
-  }
- 
-  .dark {
-${darkVars}
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}`;
+    return formattedLines.join('\n');
   }
 
-  // Generate TypeScript types for design tokens
-  generateTypes() {
-    log.subtitle('📝 Generating TypeScript Types');
+  // Generate properly formatted Tailwind config
+  generateTailwindConfig() {
+    log.subtitle('⚙️  Generating Tailwind Config');
     
     const colors = this.extractTailwindColors();
-    const typography = this.extractTypography();
     
-    let types = `// Auto-generated design token types
-export interface DesignTokens {
-  colors: {
-`;
+    // Read the existing config
+    const tailwindPath = path.join(this.outputDir, 'tailwind.config.js');
+    let content = fs.readFileSync(tailwindPath, 'utf8');
     
-    // Add color types
-    Object.entries(colors).forEach(([colorName, colorShades]) => {
-      if (typeof colorShades === 'object' && colorShades !== null) {
-        types += `    ${colorName}: {\n`;
-        Object.keys(colorShades).forEach(shade => {
-          types += `      "${shade}": string;\n`;
-        });
-        types += `    };\n`;
-      } else {
-        types += `    ${colorName}: string;\n`;
-      }
-    });
+    // Generate buy and sell colors section
+    let buySellColors = '';
+    if (colors.buy) {
+      buySellColors = `         buy: {
+           background: "rgb(var(--buy-background) / <alpha-value>)",
+           foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+         },
+         sell: {
+           background: "rgb(var(--sell-background) / <alpha-value>)",
+           foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+         },`;
+    }
     
-    types += `  };
-  typography: {
-`;
+    // Find and replace the colors section
+    const colorsMatch = content.match(/(colors:\s*{[\s\S]*?)(},\s*spacing:)/);
+    if (colorsMatch && buySellColors) {
+      const beforeColors = colorsMatch[1];
+      const afterColors = colorsMatch[2];
+      content = content.replace(colorsMatch[0], beforeColors + buySellColors + '\n' + afterColors);
+    }
     
-    // Add typography types
-    Object.entries(typography).forEach(([typeName, typeProps]) => {
-      types += `    "${typeName}": {\n`;
-      if (typeof typeProps === 'object') {
-        Object.keys(typeProps).forEach(prop => {
-          types += `      "${prop}": any;\n`;
-        });
-      }
-      types += `    };\n`;
-    });
+    // Format the entire config
+    content = this.formatTailwindConfig(content);
     
-    types += `  };
-}
-
-export type ColorName = keyof DesignTokens['colors'];
-export type TypographyName = keyof DesignTokens['typography'];
-`;
-    
-    return types;
+    return content;
   }
 
-  // Apply tokens to project files
-  async applyTokens() {
+  // Apply tokens to project
+  async apply() {
     log.title('🚀 Applying Design Tokens');
     
-    try {
-      // Generate and write Tailwind config
-      const tailwindConfig = this.generateTailwindConfig();
-      fs.writeFileSync(path.join(this.outputDir, 'tailwind.config.js'), tailwindConfig);
-      log.success('Updated tailwind.config.js');
+    // Generate CSS variables
+    const cssVariables = this.generateCSSVariables();
+    
+    // Update globals.css
+    const globalsPath = path.join(this.outputDir, 'src/styles/globals.css');
+    if (fs.existsSync(globalsPath)) {
+      let content = fs.readFileSync(globalsPath, 'utf8');
       
-      // Generate and write CSS variables
-      const cssVariables = this.generateCSSVariables();
-      const stylesDir = path.join(this.outputDir, 'src', 'styles');
-      if (!fs.existsSync(stylesDir)) {
-        fs.mkdirSync(stylesDir, { recursive: true });
-      }
-      fs.writeFileSync(path.join(stylesDir, 'globals.css'), cssVariables);
+      // Remove existing custom variables
+      content = content.replace(/--custom-buy-20-dark-buy-40:.*?\n/g, '');
+      content = content.replace(/--custom-sell-20-dark-sell-40:.*?\n/g, '');
+      
+      // Add new variables
+      content = content.replace('  :root {', `  :root {\n${cssVariables.split('  :root {')[1]}`);
+      
+      fs.writeFileSync(globalsPath, content);
       log.success('Updated src/styles/globals.css');
-      
-      // Generate and write TypeScript types
-      const types = this.generateTypes();
-      const typesDir = path.join(this.outputDir, 'src', 'types');
-      if (!fs.existsSync(typesDir)) {
-        fs.mkdirSync(typesDir, { recursive: true });
-      }
-      fs.writeFileSync(path.join(typesDir, 'design-tokens.ts'), types);
-      log.success('Generated src/types/design-tokens.ts');
-      
-      log.title('✅ Design tokens successfully applied!');
-      
-    } catch (error) {
-      log.error(`Failed to apply tokens: ${error.message}`);
-      throw error;
     }
+    
+    // Update tailwind.config.js with proper formatting
+    const tailwindPath = path.join(this.outputDir, 'tailwind.config.js');
+    const formattedConfig = this.generateTailwindConfig();
+    fs.writeFileSync(tailwindPath, formattedConfig);
+    log.success('Updated tailwind.config.js');
+    
+    log.success('✅ Design tokens successfully applied!');
   }
 
-  // Utility methods
-  getFileSize(filepath) {
-    const stats = fs.statSync(filepath);
-    const sizeInBytes = stats.size;
-    if (sizeInBytes < 1024) return `${sizeInBytes}B`;
-    if (sizeInBytes < 1048576) return `${(sizeInBytes / 1024).toFixed(1)}KB`;
-    return `${(sizeInBytes / 1048576).toFixed(1)}MB`;
-  }
-
-  // Main processing method
-  async process() {
-    try {
-      await this.loadTokens();
-      await this.applyTokens();
-      
-      log.title('🎉 Token processing completed successfully!');
-      log.info('Your shadcn-ui project has been updated with the new design tokens.');
-      log.info('Run `npm run dev` to see the changes.');
-      
-    } catch (error) {
-      log.error(`Token processing failed: ${error.message}`);
-      process.exit(1);
-    }
-  }
-
-  // Generate summary report
-  generateReport() {
+  // Generate report
+  async report() {
     log.title('📊 Design Token Summary');
     
     const colors = this.extractTailwindColors();
-    const typography = this.extractTypography();
-    const spacing = this.extractSpacing();
+    const semanticColors = this.extractSemanticColors();
     
-    log.info(`Colors: ${Object.keys(colors).length} color families`);
-    log.info(`Spacing: ${Object.keys(spacing).length} spacing values`);
-    log.info(`Typography: ${Object.keys(typography).length} type styles`);
-    
-    // Show sample colors
-    if (Object.keys(colors).length > 0) {
-      log.subtitle('Sample Colors:');
-      Object.entries(colors).slice(0, 3).forEach(([name, value]) => {
-        if (typeof value === 'object') {
-          log.info(`  ${name}: ${Object.keys(value).length} shades`);
-        } else {
-          log.info(`  ${name}: ${value}`);
-        }
-      });
-    }
+    console.log(`ℹ Colors: ${Object.keys(colors).length} color families`);
+    console.log(`ℹ Semantic Colors: ${Object.keys(semanticColors.light).length} semantic colors`);
+    console.log('Sample Colors:');
+    Object.keys(colors).slice(0, 5).forEach(name => {
+      if (typeof colors[name] === 'object') {
+        console.log(`ℹ   ${name}: ${Object.keys(colors[name]).length} variants`);
+      } else {
+        console.log(`ℹ   ${name}: ${colors[name]}`);
+      }
+    });
   }
 }
 
-// CLI Setup
+// CLI setup
 const program = new Command();
 
 program
   .name('process-tokens')
-  .description('Process Figma design tokens and apply them to shadcn-ui project')
+  .description('Process Figma design tokens and apply them to shadcn/ui project')
   .version('1.0.0');
 
 program
   .command('apply')
   .description('Apply design tokens to the project')
-  .option('-t, --tokens-dir <dir>', 'Directory containing token files', 'override')
-  .option('-o, --output-dir <dir>', 'Output directory for processed files', '.')
-  .option('-v, --verbose', 'Enable verbose logging')
+  .option('-d, --tokens-dir <dir>', 'Directory containing token files', 'override')
+  .option('-o, --output-dir <dir>', 'Output directory', '.')
+  .option('-v, --verbose', 'Verbose output')
   .action(async (options) => {
     const processor = new TokenProcessor(options);
-    await processor.process();
+    await processor.loadTokens();
+    await processor.apply();
+    log.success('\n🎉 Token processing completed successfully!');
+    log.info('Your shadcn-ui project has been updated with the new design tokens.');
+    log.info('Run `npm run dev` to see the changes.');
   });
 
 program
   .command('report')
-  .description('Generate a summary report of design tokens')
-  .option('-t, --tokens-dir <dir>', 'Directory containing token files', 'override')
-  .option('-v, --verbose', 'Enable verbose logging')
-  .action((options) => {
+  .description('Generate a report of available tokens')
+  .option('-d, --tokens-dir <dir>', 'Directory containing token files', 'override')
+  .option('-v, --verbose', 'Verbose output')
+  .action(async (options) => {
     const processor = new TokenProcessor(options);
-    processor.loadTokens().then(() => {
-      processor.generateReport();
-    });
+    await processor.loadTokens();
+    await processor.report();
   });
 
 program
   .command('validate')
-  .description('Validate design token files')
-  .option('-t, --tokens-dir <dir>', 'Directory containing token files', 'override')
-  .action((options) => {
+  .description('Validate token files')
+  .option('-d, --tokens-dir <dir>', 'Directory containing token files', 'override')
+  .action(async (options) => {
     const processor = new TokenProcessor(options);
-    processor.loadTokens().then(() => {
-      log.success('All token files are valid!');
-    }).catch((error) => {
-      log.error(`Validation failed: ${error.message}`);
-      process.exit(1);
-    });
+    await processor.loadTokens();
+    log.success('✅ All token files are valid');
   });
 
-// Run CLI
-if (require.main === module) {
-  program.parse();
-}
-
-module.exports = TokenProcessor; 
+program.parse();

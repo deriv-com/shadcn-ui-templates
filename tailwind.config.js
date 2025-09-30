@@ -17,54 +17,46 @@ module.exports = {
       },
     },
     extend: {
-             colors: {
-         border: "rgb(var(--border) / <alpha-value>)",
-         input: "rgb(var(--input) / <alpha-value>)",
-         ring: "rgb(var(--ring) / <alpha-value>)",
-         background: "rgb(var(--background) / <alpha-value>)",
-         foreground: "rgb(var(--foreground) / <alpha-value>)",
-         primary: {
-           DEFAULT: "rgb(var(--primary) / <alpha-value>)",
-           foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
-         },
-         secondary: {
-           DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
-           foreground: "rgb(var(--secondary-foreground) / <alpha-value>)",
-         },
-         destructive: {
-           DEFAULT: "rgb(var(--destructive) / <alpha-value>)",
-           foreground: "rgb(var(--destructive-foreground) / <alpha-value>)",
-         },
-         muted: {
-           DEFAULT: "rgb(var(--muted) / <alpha-value>)",
-           foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
-         },
-         accent: {
-           DEFAULT: "rgb(var(--accent) / <alpha-value>)",
-           foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
-         },
-         popover: {
-           DEFAULT: "rgb(var(--popover) / <alpha-value>)",
-           foreground: "rgb(var(--popover-foreground) / <alpha-value>)",
-         },
-         card: {
-           DEFAULT: "rgb(var(--card) / <alpha-value>)",
-           foreground: "rgb(var(--card-foreground) / <alpha-value>)",
-         },
-         buy: {
-           "20": "rgb(var(--buy-20) / <alpha-value>)",
-           "40": "rgb(var(--buy-40) / <alpha-value>)",
-         },
-         sell: {
-           "20": "rgb(var(--sell-20) / <alpha-value>)",
-           "40": "rgb(var(--sell-40) / <alpha-value>)",
-         },
-                    // Enhanced color palette from design tokens
-            base: {
+      colors: {
+        border: "rgb(var(--border) / <alpha-value>)",
+        input: "rgb(var(--input) / <alpha-value>)",
+        ring: "rgb(var(--ring) / <alpha-value>)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+        primary: {
+          DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+          foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
+        },
+        secondary: {
+          DEFAULT: "rgb(var(--secondary) / <alpha-value>)",
+          foreground: "rgb(var(--secondary-foreground) / <alpha-value>)",
+        },
+        destructive: {
+          DEFAULT: "rgb(var(--destructive) / <alpha-value>)",
+          foreground: "rgb(var(--destructive-foreground) / <alpha-value>)",
+        },
+        muted: {
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
+        },
+        accent: {
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
+        },
+        popover: {
+          DEFAULT: "rgb(var(--popover) / <alpha-value>)",
+          foreground: "rgb(var(--popover-foreground) / <alpha-value>)",
+        },
+        card: {
+          DEFAULT: "rgb(var(--card) / <alpha-value>)",
+          foreground: "rgb(var(--card-foreground) / <alpha-value>)",
+        },
+        // Enhanced color palette from design tokens
+        base: {
           "black": "rgb(0, 0, 0)",
           "white": "rgb(255, 255, 255)",
           "transparent": "rgba(255, 255, 255, 0)"
-},
+        },
         gray: {
           "50": "rgb(249, 250, 251)",
           "100": "rgb(243, 244, 246)",
@@ -77,7 +69,7 @@ module.exports = {
           "800": "rgb(31, 41, 55)",
           "900": "rgb(17, 24, 39)",
           "950": "rgb(3, 7, 18)"
-},
+        },
         zinc: {
           "50": "rgb(250, 250, 250)",
           "100": "rgb(244, 244, 245)",
@@ -90,7 +82,7 @@ module.exports = {
           "800": "rgb(39, 39, 42)",
           "900": "rgb(24, 24, 27)",
           "950": "rgb(9, 9, 11)"
-},
+        },
         neutral: {
           "50": "rgb(255, 255, 255)",
           "100": "rgb(245, 245, 245)",
@@ -103,7 +95,7 @@ module.exports = {
           "800": "rgb(38, 38, 38)",
           "900": "rgb(23, 23, 23)",
           "950": "rgb(10, 10, 10)"
-},
+        },
         stone: {
           "50": "rgb(250, 250, 249)",
           "100": "rgb(245, 245, 244)",
@@ -116,7 +108,7 @@ module.exports = {
           "800": "rgb(41, 37, 36)",
           "900": "rgb(28, 25, 23)",
           "950": "rgb(12, 10, 9)"
-},
+        },
         orange: {
           "50": "rgb(255, 247, 237)",
           "100": "rgb(255, 237, 213)",
@@ -129,7 +121,7 @@ module.exports = {
           "800": "rgb(154, 52, 18)",
           "900": "rgb(124, 45, 18)",
           "950": "rgb(67, 20, 7)"
-},
+        },
         amber: {
           "50": "rgb(255, 251, 235)",
           "100": "rgb(254, 243, 199)",
@@ -142,7 +134,7 @@ module.exports = {
           "800": "rgb(146, 64, 14)",
           "900": "rgb(120, 53, 15)",
           "950": "rgb(69, 26, 3)"
-},
+        },
         yellow: {
           "50": "rgb(254, 252, 232)",
           "100": "rgb(254, 249, 195)",
@@ -155,7 +147,7 @@ module.exports = {
           "800": "rgb(133, 77, 14)",
           "900": "rgb(113, 63, 18)",
           "950": "rgb(66, 32, 6)"
-},
+        },
         lime: {
           "50": "rgb(247, 254, 231)",
           "100": "rgb(236, 252, 203)",
@@ -168,7 +160,7 @@ module.exports = {
           "800": "rgb(63, 98, 18)",
           "900": "rgb(54, 83, 20)",
           "950": "rgb(26, 46, 5)"
-},
+        },
         green: {
           "50": "rgb(240, 253, 244)",
           "100": "rgb(220, 252, 231)",
@@ -181,7 +173,7 @@ module.exports = {
           "800": "rgb(22, 101, 52)",
           "900": "rgb(20, 83, 45)",
           "950": "rgb(5, 46, 22)"
-},
+        },
         emerald: {
           "50": "rgb(230, 255, 249)",
           "100": "rgb(184, 255, 234)",
@@ -194,7 +186,7 @@ module.exports = {
           "800": "rgb(0, 132, 89)",
           "900": "rgb(0, 92, 65)",
           "950": "rgb(0, 51, 38)"
-},
+        },
         teal: {
           "50": "rgb(240, 253, 250)",
           "100": "rgb(204, 251, 241)",
@@ -207,7 +199,7 @@ module.exports = {
           "800": "rgb(17, 94, 89)",
           "900": "rgb(19, 78, 74)",
           "950": "rgb(4, 47, 46)"
-},
+        },
         cyan: {
           "50": "rgb(236, 254, 255)",
           "100": "rgb(207, 250, 254)",
@@ -220,7 +212,7 @@ module.exports = {
           "800": "rgb(21, 94, 117)",
           "900": "rgb(22, 78, 99)",
           "950": "rgb(8, 51, 68)"
-},
+        },
         sky: {
           "50": "rgb(240, 249, 255)",
           "100": "rgb(224, 242, 254)",
@@ -233,7 +225,7 @@ module.exports = {
           "800": "rgb(7, 89, 133)",
           "900": "rgb(12, 74, 110)",
           "950": "rgb(8, 47, 73)"
-},
+        },
         blue: {
           "50": "rgb(239, 246, 255)",
           "100": "rgb(219, 234, 254)",
@@ -246,7 +238,7 @@ module.exports = {
           "800": "rgb(30, 64, 175)",
           "900": "rgb(30, 58, 138)",
           "950": "rgb(23, 37, 84)"
-},
+        },
         indigo: {
           "50": "rgb(238, 242, 255)",
           "100": "rgb(224, 231, 255)",
@@ -259,7 +251,7 @@ module.exports = {
           "800": "rgb(55, 48, 163)",
           "900": "rgb(49, 46, 129)",
           "950": "rgb(30, 27, 75)"
-},
+        },
         violet: {
           "50": "rgb(245, 243, 255)",
           "100": "rgb(237, 233, 254)",
@@ -272,7 +264,7 @@ module.exports = {
           "800": "rgb(91, 33, 182)",
           "900": "rgb(76, 29, 149)",
           "950": "rgb(30, 27, 75)"
-},
+        },
         purple: {
           "50": "rgb(250, 245, 255)",
           "100": "rgb(243, 232, 255)",
@@ -285,7 +277,7 @@ module.exports = {
           "800": "rgb(107, 33, 168)",
           "900": "rgb(88, 28, 135)",
           "950": "rgb(59, 7, 100)"
-},
+        },
         fuchsia: {
           "50": "rgb(253, 244, 255)",
           "100": "rgb(250, 232, 255)",
@@ -298,7 +290,7 @@ module.exports = {
           "800": "rgb(134, 25, 143)",
           "900": "rgb(112, 26, 117)",
           "950": "rgb(74, 4, 78)"
-},
+        },
         pink: {
           "50": "rgb(253, 242, 248)",
           "100": "rgb(252, 231, 243)",
@@ -311,7 +303,7 @@ module.exports = {
           "800": "rgb(157, 23, 77)",
           "900": "rgb(131, 24, 67)",
           "950": "rgb(80, 7, 36)"
-},
+        },
         cherry: {
           "50": "rgb(255, 230, 231)",
           "100": "rgb(255, 184, 191)",
@@ -324,7 +316,7 @@ module.exports = {
           "800": "rgb(133, 0, 19)",
           "900": "rgb(92, 0, 10)",
           "950": "rgb(51, 0, 3)"
-},
+        },
         coral: {
           "100": "rgb(255, 230, 230)",
           "200": "rgb(255, 191, 194)",
@@ -339,7 +331,7 @@ module.exports = {
           "1100": "rgb(136, 3, 13)",
           "1200": "rgb(106, 0, 4)",
           "1300": "rgb(77, 0, 0)"
-},
+        },
         slate: {
           "50": "rgb(246, 247, 248)",
           "100": "rgb(235, 236, 239)",
@@ -356,7 +348,7 @@ module.exports = {
           "1200": "rgb(24, 28, 37)",
           "1300": "rgb(17, 20, 27)",
           "1400": "rgb(0, 0, 0)"
-},
+        },
         red: {
           "50": "rgb(254, 252, 252)",
           "100": "rgb(243, 202, 202)",
@@ -369,9 +361,17 @@ module.exports = {
           "800": "rgb(115, 0, 0)",
           "900": "rgb(88, 0, 0)",
           "950": "rgb(61, 0, 0)"
-},
+        },
+        buy: {
+          background: "rgb(var(--buy-background) / <alpha-value>)",
+          foreground: "rgb(var(--buy-foreground) / <alpha-value>)",
+        },
+        sell: {
+          background: "rgb(var(--sell-background) / <alpha-value>)",
+          foreground: "rgb(var(--sell-foreground) / <alpha-value>)",
+        },
       },
-                spacing: {
+      spacing: {
         "0": "0px",
         "1": "4px",
         "2": "8px",
@@ -407,7 +407,7 @@ module.exports = {
         "1-5": "6px",
         "2-5": "10px",
         "3-5": "14px"
-},
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
