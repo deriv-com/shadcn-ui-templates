@@ -18,8 +18,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        buy: "bg-buy-20 text-buy-40 hover:bg-buy-40/90",
-        sell: "bg-sell-20 text-sell-40 hover:bg-sell-40/90",
+        buy: "bg-buy",
+        sell: "bg-sell",
       },
       size: {
         default: "h-10 px-4 py-2",
