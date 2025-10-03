@@ -60,22 +60,22 @@ jobs:
     - name: Verify build output
       run: |
         echo "📦 Build output verification:"
-        ls -la dist/
+        ls -la npm-dist/
         echo ""
         echo "📁 Components:"
-        ls -la dist/components/ || echo "No components directory"
+        ls -la npm-dist/components/ || echo "No components directory"
         echo ""
         echo "📁 Lib:"
-        ls -la dist/lib/ || echo "No lib directory"
+        ls -la npm-dist/lib/ || echo "No lib directory"
         echo ""
         echo "📁 Styles:"
-        ls -la dist/styles/ || echo "No styles directory"
+        ls -la npm-dist/styles/ || echo "No styles directory"
         echo ""
         echo "📁 Registry:"
-        ls -la dist/registry/ || echo "No registry directory"
+        ls -la npm-dist/registry/ || echo "No registry directory"
         echo ""
         echo "📄 Package files:"
-        ls -la dist/package.json dist/README.md dist/CHANGELOG.md dist/index.ts || echo "Missing package files"
+        ls -la npm-dist/package.json npm-dist/README.md npm-dist/CHANGELOG.md npm-dist/index.ts || echo "Missing package files"
         
     - name: Get current version
       id: get_version
@@ -125,7 +125,7 @@ jobs:
         
     - name: Update package.json version
       run: |
-        cd dist
+        cd npm-dist
         npm version $VERSION --no-git-tag-version
         echo "📦 Updated package.json to version: $VERSION"
         
@@ -139,7 +139,7 @@ jobs:
         
     - name: Publish to NPM
       run: |
-        cd dist
+        cd npm-dist
         echo "🚀 Publishing @deriv/shadcn-components@$VERSION to NPM..."
         npm publish --access public
         echo "✅ Successfully published to NPM!"
