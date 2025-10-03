@@ -3,7 +3,6 @@ import ora from 'ora';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
-import { execa } from 'execa';
 import { detectFramework, getFrameworkConfig } from '../utils/framework';
 import { updateConfigFiles } from '../utils/files';
 import { copyAllComponents } from '../utils/components';
