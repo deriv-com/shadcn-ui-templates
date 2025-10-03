@@ -159,14 +159,14 @@ function copyAndUpdatePackageJson() {
     ...packageJson,
     name: '@deriv/shadcn-components',
     description: 'Deriv Quill shadcn/ui components with Figma design token integration',
-    main: 'index.js',
-    module: 'index.esm.js',
-    types: 'index.d.ts',
+    main: 'index.ts',
+    module: 'index.ts',
+    types: 'index.ts',
     exports: {
       ".": {
-        "import": "./index.esm.js",
-        "require": "./index.js",
-        "types": "./index.d.ts"
+        "import": "./index.ts",
+        "require": "./index.ts",
+        "types": "./index.ts"
       },
       "./styles": "./styles/globals.css",
       "./tailwind": "./tailwind.config.js"
@@ -176,9 +176,7 @@ function copyAndUpdatePackageJson() {
       registry: 'https://registry.npmjs.org'
     },
     files: [
-      "index.js",
-      "index.esm.js", 
-      "index.d.ts",
+      "index.ts",
       "components/",
       "lib/",
       "styles/",
@@ -229,7 +227,22 @@ Add the CSS to your app:
 import '@deriv/shadcn-components/styles';
 \`\`\`
 
-### 3. Configure Tailwind (Optional)
+### 3. Configure TypeScript (if needed)
+
+If you're using TypeScript, you may need to configure path mapping in your tsconfig.json:
+
+\`\`\`json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*", "./node_modules/@deriv/shadcn-components/*"]
+    }
+  }
+}
+\`\`\`
+
+### 4. Configure Tailwind (Optional)
 
 If you want to use the included Tailwind config:
 
@@ -372,7 +385,11 @@ async function compileTypeScript(distPath) {
         outDir: './',
         declaration: true,
         declarationMap: true,
-        sourceMap: true
+        sourceMap: true,
+        baseUrl: '.',
+        paths: {
+          '@/*': ['./*']
+        }
       },
       include: ['components/**/*', 'lib/**/*', 'types/**/*', 'index.ts'],
       exclude: ['node_modules', 'dist']
@@ -523,9 +540,9 @@ export * from './types';
 `;
     fs.writeFileSync(path.join(distPath, 'index.ts'), mainIndexContent);
 
-    // Step 15: Compile TypeScript to JavaScript
-    logStep('COMPILE', 'Compiling TypeScript to JavaScript...');
-    await compileTypeScript(distPath);
+    // Step 15: Skip TypeScript compilation for now
+    // The package will ship with TypeScript files and let consumers handle compilation
+    logStep('SKIP', 'Skipping TypeScript compilation - shipping .tsx files directly');
 
     log('', 'white');
     logSuccess('Component build completed successfully!');
