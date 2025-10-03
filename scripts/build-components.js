@@ -157,7 +157,7 @@ function copyAndUpdatePackageJson() {
   // Update only the necessary fields for npm publishing
   const updatedPackageJson = {
     ...packageJson,
-    name: '@deriv/shadcn-components',
+    name: '@deriv-com/quill-shadcnui-templates',
     description: 'Deriv Quill shadcn/ui components with Figma design token integration',
     main: 'index.ts',
     module: 'index.ts',
@@ -198,14 +198,14 @@ function copyAndUpdatePackageJson() {
 }
 
 function generateReadme() {
-  const readmeContent = `# @deriv/shadcn-components
+  const readmeContent = `# @deriv-com/quill-shadcnui-templates
 
 Deriv's shadcn/ui components with Figma design token integration.
 
 ## Installation
 
 \`\`\`bash
-npm install @deriv/shadcn-components
+npm install @deriv-com/quill-shadcnui-templates
 \`\`\`
 
 ## Setup
@@ -224,7 +224,7 @@ Add the CSS to your app:
 
 \`\`\`tsx
 // In your main.tsx or App.tsx
-import '@deriv/shadcn-components/styles';
+import '@deriv-com/quill-shadcnui-templates/styles';
 \`\`\`
 
 ### 3. Configure TypeScript (if needed)
@@ -236,7 +236,7 @@ If you're using TypeScript, you may need to configure path mapping in your tscon
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*", "./node_modules/@deriv/shadcn-components/*"]
+      "@/*": ["./src/*", "./node_modules/@deriv-com/quill-shadcnui-templates/*"]
     }
   }
 }
@@ -248,7 +248,7 @@ If you want to use the included Tailwind config:
 
 \`\`\`js
 // tailwind.config.js
-import tailwindConfig from '@deriv/shadcn-components/tailwind';
+import tailwindConfig from '@deriv-com/quill-shadcnui-templates/tailwind';
 
 export default {
   ...tailwindConfig,
@@ -259,7 +259,7 @@ export default {
 ## Usage
 
 \`\`\`tsx
-import { Button, Card, Input } from '@deriv/shadcn-components';
+import { Button, Card, Input } from '@deriv-com/quill-shadcnui-templates';
 
 function App() {
   return (
