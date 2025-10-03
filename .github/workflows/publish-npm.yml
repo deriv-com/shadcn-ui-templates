@@ -39,6 +39,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
       
     - name: Setup Node.js
       uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
@@ -125,14 +128,13 @@ jobs:
         npm version $VERSION --no-git-tag-version
         echo "📦 Updated package.json to version: $VERSION"
         
-    - name: Create and push git tag
+    - name: Create git tag
       if: github.event.inputs.create_tag == 'true'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git tag -a "v$VERSION" -m "Release v$VERSION"
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git "v$VERSION"
-        echo "🏷️ Created and pushed tag: v$VERSION"
+        echo "🏷️ Created tag: v$VERSION"
         
     - name: Publish to NPM
       run: |
@@ -140,6 +142,14 @@ jobs:
         npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        
+    - name: Push tag and create GitHub Release
+      if: github.event.inputs.create_tag == 'true'
+      run: |
+        git push origin "v$VERSION"
+        echo "🏷️ Pushed tag: v$VERSION"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Create GitHub Release
       if: github.event.inputs.create_tag == 'true'
