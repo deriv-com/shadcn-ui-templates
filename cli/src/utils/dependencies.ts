@@ -1,4 +1,4 @@
-import { execa } from 'execa';
+import execa from 'execa';
 import ora from 'ora';
 
 export async function installDependencies(targetDir: string, dependencies: string[]) {

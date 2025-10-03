@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import fs from 'fs-extra';
 import path from 'path';
-import { execa } from 'execa';
+import execa from 'execa';
 import inquirer from 'inquirer';
 import { detectFramework, getFrameworkConfig } from '../utils/framework';
 import { updateComponentFiles, updateConfigFiles } from '../utils/files';
