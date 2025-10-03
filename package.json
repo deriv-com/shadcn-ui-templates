@@ -1,5 +1,5 @@
 {
-  "name": "shadcn-ui-templates",
+  "name": "@deriv-com/quill-shadcnui-templates",
   "version": "1.0.0",
   "description": "Complete shadcn/ui component templates for V0 development with Figma design token integration",
   "files": [
@@ -19,6 +19,7 @@
     "dev": "vite --open",
     "build": "vite build",
     "build:local": "vite build --config vite.config.local.ts",
+    "build:components": "node scripts/build-components.js",
     "preview:local": "npm run build:local && cd dist && python3 -m http.server 8080",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
