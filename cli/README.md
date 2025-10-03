@@ -1,6 +1,6 @@
 # @deriv-com/quill-shadcn-cli
 
-A powerful CLI tool for setting up and managing Deriv Quill shadcn/ui components in your React projects.
+A simple CLI tool for setting up Deriv Quill shadcn/ui components in your React projects.
 
 ## Installation
 
@@ -11,13 +11,10 @@ npm install -g @deriv-com/quill-shadcn-cli
 ## Quick Start
 
 ```bash
-# Install Deriv Quill components in your project
+# Complete setup (installs all components + config)
 quill-shadcn install
 
-# Add a specific component
-quill-shadcn add button
-
-# Update all components to latest version
+# Update to latest version
 quill-shadcn update
 ```
 
@@ -25,7 +22,7 @@ quill-shadcn update
 
 ### `quill-shadcn install`
 
-Install Deriv Quill components in your project with automatic framework detection.
+Complete setup that installs all Deriv Quill components and configuration.
 
 ```bash
 quill-shadcn install [options]
@@ -42,31 +39,12 @@ Options:
 - Creates necessary directories (`src/components/ui`, `src/lib`, `src/styles`)
 - Installs required dependencies
 - Sets up configuration files (Tailwind, PostCSS, components.json)
-- Copies component templates
+- Copies all 43 component templates
 - Sets up global CSS with Deriv design tokens
-
-### `quill-shadcn add <component>`
-
-Add a specific component to your project.
-
-```bash
-quill-shadcn add <component> [options]
-
-Options:
-  -d, --dir <directory>  Directory to add component to (default: "src/components/ui")
-```
-
-**Available components:**
-- `button`, `card`, `input`, `badge`, `alert`
-- `dialog`, `dropdown-menu`, `form`, `label`
-- `select`, `textarea`, `checkbox`, `radio-group`
-- `switch`, `slider`, `progress`, `avatar`
-- `skeleton`, `table`, `tabs`, `accordion`
-- And many more...
 
 ### `quill-shadcn update`
 
-Update all Deriv Quill components to the latest version.
+Update all components to the latest version.
 
 ```bash
 quill-shadcn update [options]
@@ -81,36 +59,22 @@ Options:
 - Updates configuration files (Tailwind, PostCSS, etc.)
 - Preserves your custom modifications
 
-### `quill-shadcn update-advanced`
+## What You Get
 
-Advanced update with multiple strategies and options.
+**All 43 Components:**
+- `button`, `card`, `input`, `badge`, `alert`
+- `dialog`, `dropdown-menu`, `form`, `label`
+- `select`, `textarea`, `checkbox`, `radio-group`
+- `switch`, `slider`, `progress`, `avatar`
+- `skeleton`, `table`, `tabs`, `accordion`
+- And many more...
 
-```bash
-quill-shadcn update-advanced [options]
-
-Options:
-  -d, --dir <directory>        Project directory (default: ".")
-  -s, --strategy <strategy>    Update strategy (overwrite, backup, merge, prompt) (default: "overwrite")
-  --force                      Force update without prompts
-```
-
-**Update Strategies:**
-
-1. **Overwrite** (default)
-   - Always overwrite existing components with latest version
-   - Fast and simple, but may lose custom modifications
-
-2. **Backup and Update**
-   - Creates backup of existing component before updating
-   - Safe option that preserves your original files
-
-3. **Smart Merge**
-   - Attempts to merge changes while preserving custom modifications
-   - Skips components that have been significantly modified
-
-4. **Prompt for Each**
-   - Asks for confirmation before updating each component
-   - Gives you full control over what gets updated
+**Complete Configuration:**
+- ✅ **Tailwind CSS** - Complete configuration with Deriv design tokens
+- ✅ **PostCSS** - Processing setup
+- ✅ **Global CSS** - All design variables and tokens
+- ✅ **Components.json** - shadcn/ui configuration
+- ✅ **Utils** - Component utility functions
 
 ## Framework Support
 
@@ -141,14 +105,21 @@ components.json       # shadcn/ui configuration
 ## Usage in Your Code
 
 ```tsx
-import { Button, Card, Input } from './components/ui/button';
+import { Button } from './components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from './components/ui/card';
+import { Input } from './components/ui/input';
 import './styles/globals.css';
 
 function App() {
   return (
     <Card>
-      <Input placeholder="Enter your name" />
-      <Button>Click me</Button>
+      <CardHeader>
+        <CardTitle>Welcome to Deriv Quill</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Input placeholder="Enter your name" />
+        <Button>Submit</Button>
+      </CardContent>
     </Card>
   );
 }
@@ -162,14 +133,7 @@ When you make changes to your components in the Deriv Quill package, consumers c
 # Simple update (overwrites all components)
 quill-shadcn update
 
-# Advanced update with strategy selection
-quill-shadcn update-advanced
-
-# Update with backup strategy
-quill-shadcn update-advanced --strategy backup
-
-# Update with smart merge (preserves custom changes)
-quill-shadcn update-advanced --strategy merge
+# That's it! Simple and clean.
 ```
 
 ## Design Tokens
@@ -193,10 +157,10 @@ The CLI will default to React if it can't detect your framework. You can specify
 quill-shadcn install --framework next
 ```
 
-### Update conflicts
-If you have custom modifications to components, use the smart merge strategy:
+### Update issues
+If you have issues updating, try:
 ```bash
-quill-shadcn update-advanced --strategy merge
+quill-shadcn update --force
 ```
 
 ## Contributing
