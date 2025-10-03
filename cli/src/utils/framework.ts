@@ -45,7 +45,6 @@ export function getFrameworkConfig(framework: string): FrameworkConfig {
     react: {
       name: 'React',
       dependencies: [
-        '@deriv-com/quill-shadcnui-templates',
         'class-variance-authority',
         'clsx',
         'tailwind-merge',
@@ -73,7 +72,6 @@ export function getFrameworkConfig(framework: string): FrameworkConfig {
     next: {
       name: 'Next.js',
       dependencies: [
-        '@deriv-com/quill-shadcnui-templates',
         'class-variance-authority',
         'clsx',
         'tailwind-merge',
@@ -101,7 +99,6 @@ export function getFrameworkConfig(framework: string): FrameworkConfig {
     vite: {
       name: 'Vite',
       dependencies: [
-        '@deriv-com/quill-shadcnui-templates',
         'class-variance-authority',
         'clsx',
         'tailwind-merge',
