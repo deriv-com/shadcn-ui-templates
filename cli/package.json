@@ -9,7 +9,6 @@
   "scripts": {
     "build": "tsc && npm run copy-components",
     "copy-components": "node scripts/copy-components.js",
-    "dev": "tsx src/index.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -33,7 +32,6 @@
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^8.2.10",
     "@types/node": "^20.5.2",
-    "tsx": "^4.6.2",
     "typescript": "^5.0.2"
   },
   "files": [
