@@ -56,7 +56,7 @@ jobs:
     - name: Build CLI
       run: |
         cd cli
-        npm ci
+        npm install
         npm run build
       working-directory: .
       
