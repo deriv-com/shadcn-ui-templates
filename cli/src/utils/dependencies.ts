@@ -1,4 +1,5 @@
-import execa from 'execa';
+import { spawn } from 'child_process';
+import { promisify } from 'util';
 import ora from 'ora';
 
 export async function installDependencies(targetDir: string, dependencies: string[]) {
@@ -6,10 +7,7 @@ export async function installDependencies(targetDir: string, dependencies: strin
   
   try {
     // Install production dependencies
-    await execa('npm', ['install', ...dependencies], {
-      cwd: targetDir,
-      stdio: 'pipe'
-    });
+    await runCommand('npm', ['install', ...dependencies], targetDir);
     
     spinner.succeed('Dependencies installed successfully');
   } catch (error) {
@@ -24,10 +22,7 @@ export async function installDevDependencies(targetDir: string, devDependencies:
   
   try {
     // Install dev dependencies
-    await execa('npm', ['install', '--save-dev', ...devDependencies], {
-      cwd: targetDir,
-      stdio: 'pipe'
-    });
+    await runCommand('npm', ['install', '--save-dev', ...devDependencies], targetDir);
     
     spinner.succeed('Dev dependencies installed successfully');
   } catch (error) {
@@ -35,4 +30,26 @@ export async function installDevDependencies(targetDir: string, devDependencies:
     console.error('Error:', error);
     throw error;
   }
+}
+
+function runCommand(command: string, args: string[], cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const process = spawn(command, args, {
+      cwd,
+      stdio: 'pipe',
+      shell: true
+    });
+
+    process.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Command failed with exit code ${code}`));
+      }
+    });
+
+    process.on('error', (error) => {
+      reject(error);
+    });
+  });
 }
