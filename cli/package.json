@@ -1,6 +1,6 @@
 {
   "name": "@deriv-com/quill-shadcn-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "CLI tool for setting up Deriv Quill shadcn/ui components",
   "main": "dist/index.js",
   "bin": {
