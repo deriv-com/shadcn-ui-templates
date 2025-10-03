@@ -64,16 +64,20 @@ export async function getAvailableComponents(): Promise<string[]> {
 }
 
 export async function copyAllComponents(targetDir: string): Promise<string[]> {
-  // First try to copy from local development source (for CLI development)
-  // Look in the parent directory of the CLI (where the main project is)
-  const localSourceDir = path.join(__dirname, '../../../src/components/ui');
+  // First try to copy from bundled components (in CLI dist)
+  const bundledComponentsDir = path.join(__dirname, '../components');
   const targetComponentsDir = path.join(targetDir, 'src/components/ui');
   const copiedComponents: string[] = [];
   
-  let sourceDir = localSourceDir;
+  let sourceDir = bundledComponentsDir;
+  
+  // If bundled components don't exist, try local development source
+  if (!await fs.pathExists(bundledComponentsDir)) {
+    sourceDir = path.join(__dirname, '../../../src/components/ui');
+  }
   
   // If local source doesn't exist, try the published package
-  if (!await fs.pathExists(localSourceDir)) {
+  if (!await fs.pathExists(sourceDir)) {
     sourceDir = path.join(process.cwd(), 'node_modules/@deriv-com/quill-shadcnui-templates/src/components/ui');
   }
   
