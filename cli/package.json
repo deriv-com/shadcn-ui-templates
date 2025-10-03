@@ -1,6 +1,6 @@
 {
   "name": "@deriv-com/quill-shadcn-cli",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "CLI tool for setting up Deriv Quill shadcn/ui components",
   "main": "dist/index.js",
   "bin": {
@@ -22,7 +22,7 @@
   "author": "Deriv",
   "license": "MIT",
   "dependencies": {
-    "chalk": "^5.3.0",
+    "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^9.2.23",
