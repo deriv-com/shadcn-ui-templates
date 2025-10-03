@@ -27,26 +27,12 @@ export async function updateCommand(options: UpdateOptions) {
       return;
     }
 
-    // Read current package.json
-    const packageJson = await fs.readJson(packageJsonPath);
-    
-    // Check if Deriv Quill is installed
-    const derivQuillVersion = packageJson.dependencies?.['@deriv-com/quill-shadcnui-templates'] ||
-                             packageJson.devDependencies?.['@deriv-com/quill-shadcnui-templates'];
-    
-    if (!derivQuillVersion) {
-      spinner.fail('Deriv Quill components not found in package.json');
-      console.log(chalk.yellow('Run "quill-shadcn install" first to set up the components.'));
+    // Check if components directory exists (indicates installation)
+    const componentsDir = path.join(targetDir, 'src/components/ui');
+    if (!await fs.pathExists(componentsDir)) {
+      spinner.fail('Deriv Quill components not found. Run "quill-shadcn install" first to set up the components.');
       return;
     }
-
-    spinner.text = 'Updating package to latest version...';
-    
-    // Update the package
-    await execa('npm', ['update', '@deriv-com/quill-shadcnui-templates'], {
-      cwd: targetDir,
-      stdio: 'pipe'
-    });
 
     spinner.text = 'Detecting framework...';
     
