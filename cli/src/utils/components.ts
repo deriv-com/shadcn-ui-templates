@@ -64,29 +64,44 @@ export async function getAvailableComponents(): Promise<string[]> {
 }
 
 export async function copyAllComponents(targetDir: string): Promise<string[]> {
-  // First try to copy from bundled components (in CLI dist)
-  const bundledComponentsDir = path.join(__dirname, '../components');
   const targetComponentsDir = path.join(targetDir, 'src/components/ui');
   const copiedComponents: string[] = [];
   
-  let sourceDir = bundledComponentsDir;
+  // Ensure target directory exists
+  await fs.ensureDir(targetComponentsDir);
   
-  // If bundled components don't exist, try local development source
-  if (!await fs.pathExists(bundledComponentsDir)) {
-    sourceDir = path.join(__dirname, '../../../src/components/ui');
+  // Try multiple possible locations for bundled components
+  const possibleSourceDirs = [
+    // Bundled components in CLI dist (when CLI is installed globally)
+    path.join(__dirname, '../components'),
+    // Alternative path for global installation
+    path.join(__dirname, '../../components'),
+    // Local development source (for CLI development)
+    path.join(__dirname, '../../../src/components/ui'),
+    // Published package fallback (should be avoided)
+    path.join(process.cwd(), 'node_modules/@deriv-com/quill-shadcnui-templates/src/components/ui')
+  ];
+  
+  let sourceDir: string | null = null;
+  
+  // Find the first valid source directory
+  for (const dir of possibleSourceDirs) {
+    if (await fs.pathExists(dir)) {
+      const files = await fs.readdir(dir);
+      const hasComponents = files.some(file => file.endsWith('.tsx'));
+      if (hasComponents) {
+        sourceDir = dir;
+        break;
+      }
+    }
   }
   
-  // If local source doesn't exist, try the published package
-  if (!await fs.pathExists(sourceDir)) {
-    sourceDir = path.join(process.cwd(), 'node_modules/@deriv-com/quill-shadcnui-templates/src/components/ui');
-  }
-  
-  if (!await fs.pathExists(sourceDir)) {
+  if (!sourceDir) {
+    console.log('⚠️  No component source found. Components may not be copied.');
     return copiedComponents;
   }
   
-  // Ensure target directory exists
-  await fs.ensureDir(targetComponentsDir);
+  console.log(`📦 Copying components from: ${sourceDir}`);
   
   // Copy all component files
   const files = await fs.readdir(sourceDir);
