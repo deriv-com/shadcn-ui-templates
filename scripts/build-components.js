@@ -361,7 +361,6 @@ async function compileTypeScript(distPath) {
         lib: ['ES2020', 'DOM', 'DOM.Iterable'],
         module: 'ESNext',
         moduleResolution: 'bundler',
-        allowImportingTsExtensions: true,
         resolveJsonModule: true,
         isolatedModules: true,
         noEmit: false,
