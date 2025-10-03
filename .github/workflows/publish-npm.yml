@@ -55,6 +55,7 @@ jobs:
       
     - name: Build components
       run: node scripts/build-components.js
+      working-directory: .
       
     - name: Verify build output
       run: |
@@ -139,7 +140,9 @@ jobs:
     - name: Publish to NPM
       run: |
         cd dist
+        echo "🚀 Publishing @deriv/shadcn-components@$VERSION to NPM..."
         npm publish --access public
+        echo "✅ Successfully published to NPM!"
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         
