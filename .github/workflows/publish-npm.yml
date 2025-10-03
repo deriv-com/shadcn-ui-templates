@@ -1,4 +1,4 @@
-name: Publish to NPM
+name: Publish CLI to NPM
 
 on:
   workflow_dispatch:
@@ -53,29 +53,32 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Build components
-      run: node scripts/build-components.js
+    - name: Build CLI
+      run: |
+        cd cli
+        npm ci
+        npm run build
       working-directory: .
       
-    - name: Verify build output
+    - name: Verify CLI build output
       run: |
-        echo "📦 Build output verification:"
-        ls -la npm-dist/
+        echo "📦 CLI build output verification:"
+        ls -la cli/dist/
         echo ""
-        echo "📁 Components:"
-        ls -la npm-dist/components/ || echo "No components directory"
+        echo "📁 CLI Components:"
+        ls -la cli/dist/components/ || echo "No components directory"
         echo ""
-        echo "📁 Lib:"
-        ls -la npm-dist/lib/ || echo "No lib directory"
+        echo "📁 CLI Config:"
+        ls -la cli/dist/config/ || echo "No config directory"
         echo ""
-        echo "📁 Styles:"
-        ls -la npm-dist/styles/ || echo "No styles directory"
+        echo "📁 CLI Styles:"
+        ls -la cli/dist/styles/ || echo "No styles directory"
         echo ""
-        echo "📁 Registry:"
-        ls -la npm-dist/registry/ || echo "No registry directory"
+        echo "📁 CLI Override:"
+        ls -la cli/dist/override/ || echo "No override directory"
         echo ""
-        echo "📄 Package files:"
-        ls -la npm-dist/package.json npm-dist/README.md npm-dist/CHANGELOG.md npm-dist/index.ts || echo "Missing package files"
+        echo "📄 CLI Package files:"
+        ls -la cli/package.json cli/dist/index.js || echo "Missing CLI package files"
         
     - name: Get current version
       id: get_version
@@ -83,15 +86,15 @@ jobs:
         if [ -n "${{ github.event.inputs.current_version }}" ]; then
           CURRENT_VERSION="${{ github.event.inputs.current_version }}"
         else
-          # Try to get version from package.json
-          if [ -f "package.json" ]; then
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
+          # Try to get version from CLI package.json
+          if [ -f "cli/package.json" ]; then
+            CURRENT_VERSION=$(node -p "require('./cli/package.json').version")
           else
             CURRENT_VERSION="0.0.0"
           fi
         fi
         echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-        echo "📦 Current version: $CURRENT_VERSION"
+        echo "📦 Current CLI version: $CURRENT_VERSION"
         
     - name: Calculate new version
       id: calc_version
@@ -123,11 +126,11 @@ jobs:
         echo "📦 New version: $NEW_VERSION ($RELEASE_TYPE release)"
         echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
         
-    - name: Update package.json version
+    - name: Update CLI package.json version
       run: |
-        cd npm-dist
+        cd cli
         npm version $VERSION --no-git-tag-version
-        echo "📦 Updated package.json to version: $VERSION"
+        echo "📦 Updated CLI package.json to version: $VERSION"
         
     - name: Create git tag
       if: github.event.inputs.create_tag == 'true'
@@ -137,12 +140,12 @@ jobs:
         git tag -a "v$VERSION" -m "Release v$VERSION"
         echo "🏷️ Created tag: v$VERSION"
         
-    - name: Publish to NPM
+    - name: Publish CLI to NPM
       run: |
-        cd npm-dist
-        echo "🚀 Publishing @deriv/shadcn-components@$VERSION to NPM..."
+        cd cli
+        echo "🚀 Publishing @deriv-com/quill-shadcn-cli@$VERSION to NPM..."
         npm publish --access public
-        echo "✅ Successfully published to NPM!"
+        echo "✅ Successfully published CLI to NPM!"
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         
@@ -163,33 +166,38 @@ jobs:
         tag_name: v${{ steps.calc_version.outputs.new_version }}
         release_name: Release v${{ steps.calc_version.outputs.new_version }} (${{ github.event.inputs.release_type }})
         body: |
-          🚀 **@deriv/shadcn-components v${{ steps.calc_version.outputs.new_version }}**
+          🚀 **@deriv-com/quill-shadcn-cli v${{ steps.calc_version.outputs.new_version }}**
           
           **Release Type:** ${{ github.event.inputs.release_type }}
           **Previous Version:** ${{ steps.get_version.outputs.current_version }}
           
           ## What's New
-          - Updated shadcn/ui components with Deriv design tokens
-          - Enhanced Figma design token integration
-          - Improved TypeScript definitions
-          - Better component documentation
+          - CLI tool for easy Deriv Quill component installation
+          - Complete setup with all 43 components
+          - Tailwind, PostCSS, and global CSS configuration
+          - Design token integration
+          - Simple install and update commands
           
           ## Installation
           ```bash
-          npm install @deriv/shadcn-components@${{ steps.calc_version.outputs.new_version }}
+          npm install -g @deriv-com/quill-shadcn-cli@${{ steps.calc_version.outputs.new_version }}
           ```
           
           ## Usage
-          ```tsx
-          import { Button } from '@deriv/shadcn-components';
+          ```bash
+          # Complete setup (installs all components + config)
+          quill-shadcn install
           
-          function App() {
-            return <Button>Click me</Button>;
-          }
+          # Update to latest version
+          quill-shadcn update
           ```
           
-          ## Components
-          This release includes all shadcn/ui components with Deriv's design token integration.
+          ## Features
+          - ✅ All 43 shadcn/ui components with Deriv design tokens
+          - ✅ Complete Tailwind configuration
+          - ✅ Global CSS with design variables
+          - ✅ PostCSS and components.json setup
+          - ✅ Framework detection (React, Next.js, Vite)
           
           ## Changelog
           See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.

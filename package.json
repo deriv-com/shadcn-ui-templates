@@ -1,35 +1,20 @@
 {
   "name": "@deriv-com/quill-shadcnui-templates",
   "version": "0.0.1",
-  "description": "Complete shadcn/ui component templates for V0 development with Figma design token integration",
+  "description": "Deriv Quill shadcn/ui components with Figma design token integration",
   "files": [
     "src/components/ui",
     "src/lib",
     "src/styles",
     "src/types",
     "components.json",
-    "registry",
-    "README.md",
-    "CHANGELOG.md",
     "override",
-    "scripts",
-    "install-components.sh"
+    "README.md"
   ],
   "scripts": {
-    "dev": "vite --open",
-    "build": "vite build",
-    "build:local": "vite build --config vite.config.local.ts",
-    "build:components": "node scripts/build-components.js",
-    "preview:local": "npm run build:local && cd dist && python3 -m http.server 8080",
-    "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext ts,tsx --fix",
     "type-check": "tsc --noEmit",
-    "tokens:apply": "node scripts/process-tokens.js apply",
-    "tokens:report": "node scripts/process-tokens.js report",
-    "tokens:validate": "node scripts/process-tokens.js validate",
-    "registry:sync": "node scripts/sync-registry.js sync",
-    "registry:report": "node scripts/sync-registry.js report",
     "prepare": "husky install"
   },
   "keywords": [
@@ -40,9 +25,11 @@
     "typescript",
     "tailwind",
     "figma",
-    "v0"
+    "v0",
+    "deriv",
+    "quill"
   ],
-  "author": "",
+  "author": "Deriv",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -59,17 +46,11 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "@vitejs/plugin-react": "^4.0.3",
-    "autoprefixer": "^10.4.14",
-    "commander": "^11.1.0",
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "husky": "^9.1.7",
-    "postcss": "^8.4.27",
-    "tailwindcss": "^3.3.0",
-    "typescript": "^5.0.2",
-    "vite": "^5.4.20"
+    "typescript": "^5.0.2"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
